@@ -1,0 +1,2 @@
+# lenovo-shop
+lenovo-eshop
