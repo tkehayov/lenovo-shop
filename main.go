@@ -3,20 +3,21 @@ package main
 import (
 	"log"
 	"flag"
-	"net/http"
 	"fmt"
+	"net/http"
+	"github.com/lenovo-shop/app/router"
 )
 
 var port string
 var isDebug bool
 
 func main() {
-	http.HandleFunc("/", viewHandler)
+	http.Handle("/", router.GetRouter())
 	http.ListenAndServe(port, nil)
 }
 
-func viewHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "some tsve")
+func HomeHandler(writer http.ResponseWriter, request *http.Request) {
+	fmt.Fprintf(writer, "Welcome to home")
 }
 
 func init() {
