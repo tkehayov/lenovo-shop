@@ -3,32 +3,41 @@ package main
 import (
 	"log"
 	"flag"
-	"fmt"
 	"net/http"
 	"github.com/lenovo-shop/app/router"
+	"github.com/lenovo-shop/app/config"
+	"os/user"
+	"fmt"
 )
-
-var port string
-var isDebug bool
 
 func main() {
 	http.Handle("/", router.GetRouter())
-	http.ListenAndServe(port, nil)
-}
-
-func HomeHandler(writer http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(writer, "Welcome to home")
+	http.ListenAndServe(config.Port, nil)
 }
 
 func init() {
 	log.Println("Starting...")
 
-	flag.StringVar(&port, "port", ":8080", "Specify the port to listen to e.g. :8080")
-	flag.BoolVar(&isDebug, "isDebug", true, "Set to true to run the app in debug mode. In debug, it may panic on some errors.")
+	flag.StringVar(&config.Port, "port", ":8080", "Specify the port to listen to e.g. :8080")
+	flag.BoolVar(&config.IsDev, "isDev", true, "Set to true to run the app in Dev mode. In Dev, it may panic on some errors.")
+	flag.StringVar(&config.StaticFolder, "static", frontEndFolder(), "Set to true to run the app in Dev mode. In Dev, it may panic on some errors.")
 	flag.Parse()
 
-	if isDebug {
-		log.Println("DEBUG mode enabled")
+	if config.IsDev {
+		log.Println("Dev mode enabled")
 	}
 
+	if !config.IsDev {
+		log.Println("Prod mode enabled")
+		config.StaticFolder = "./staticss"
+	}
+}
+
+func frontEndFolder() string{
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(usr.HomeDir)
+	return usr.HomeDir+"/projects/lenovo-shop/front-end"
 }
