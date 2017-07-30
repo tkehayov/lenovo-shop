@@ -18,5 +18,8 @@ func GetRouter() http.Handler {
 }
 
 func ArticleHandler(writer http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(writer, "love you so much")
+	value:=request.FormValue("Name")
+	fmt.Println(value)
+
+	fmt.Fprintf(writer, "love you so mucsshss")
 }

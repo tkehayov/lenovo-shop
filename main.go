@@ -1,13 +1,12 @@
 package main
 
 import (
-	"log"
 	"flag"
-	"net/http"
-	"github.com/lenovo-shop/app/router"
 	"github.com/lenovo-shop/app/config"
+	"github.com/lenovo-shop/app/router"
+	"log"
+	"net/http"
 	"os/user"
-	"fmt"
 )
 
 func main() {
@@ -33,11 +32,11 @@ func init() {
 	}
 }
 
-func frontEndFolder() string{
+func frontEndFolder() string {
 	usr, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(usr.HomeDir)
-	return usr.HomeDir+"/projects/lenovo-shop/front-end"
+	log.Println("static folder" + usr.HomeDir)
+	return usr.HomeDir + "/projects/lenovo-shop/front-end"
 }
