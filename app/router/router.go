@@ -23,7 +23,7 @@ func GetRouter() http.Handler {
 }
 
 func ReadHandler(writer http.ResponseWriter, request *http.Request) {
-	model.ReadExport("./export.json")
+	model.ReadCategories("./export.json")
 }
 
 func DbHandler(writer http.ResponseWriter, request *http.Request) {

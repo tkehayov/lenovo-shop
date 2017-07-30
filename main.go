@@ -10,9 +10,9 @@ import (
 )
 
 func main() {
+
 	http.Handle("/", router.GetRouter())
 	http.ListenAndServe(config.Port, nil)
-
 }
 
 func init() {
