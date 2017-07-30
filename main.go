@@ -12,6 +12,7 @@ import (
 func main() {
 	http.Handle("/", router.GetRouter())
 	http.ListenAndServe(config.Port, nil)
+
 }
 
 func init() {
@@ -28,7 +29,7 @@ func init() {
 
 	if !config.IsDev {
 		log.Println("Prod mode enabled")
-		config.StaticFolder = "./staticss"
+		config.StaticFolder = "./statics"
 	}
 }
 
