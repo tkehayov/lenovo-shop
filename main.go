@@ -3,13 +3,18 @@ package main
 import (
 	"flag"
 	"github.com/lenovo-shop/app/config"
+	"github.com/lenovo-shop/app/model"
 	"github.com/lenovo-shop/app/router"
 	"log"
 	"net/http"
 	"os/user"
+	"github.com/lenovo-shop/app/persistence"
 )
 
 func main() {
+	pr:=model.ReadProducts()
+	p:=persistence.Product{}
+	p.Write(pr)
 
 	http.Handle("/", router.GetRouter())
 	http.ListenAndServe(config.Port, nil)
@@ -21,6 +26,7 @@ func init() {
 	flag.StringVar(&config.Port, "port", ":8080", "Specify the port to listen to e.g. :8080")
 	flag.BoolVar(&config.IsDev, "isDev", true, "Set to true to run the app in Dev mode. In Dev, it may panic on some errors.")
 	flag.StringVar(&config.StaticFolder, "static", frontEndFolder(), "Set to true to run the app in Dev mode. In Dev, it may panic on some errors.")
+	flag.StringVar(&config.DbUri, "dbUri", "root:titi89@/lenovo-shop", "Set to true to run the app in Dev mode. In Dev, it may panic on some errors.")
 	flag.Parse()
 
 	if config.IsDev {
