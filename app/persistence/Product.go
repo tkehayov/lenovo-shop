@@ -3,15 +3,16 @@ package persistence
 import (
 	"database/sql"
 	"fmt"
-	"github.com/lenovo-shop/app/model"
-	"log"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/lenovo-shop/app/config"
+	"log"
 )
 
 type Product struct {
+	Name string
 }
 
-func (p Product) Write(pr []model.Product) {
+func (pr Product) Persist() {
 	log.Print(pr)
 
 	db, err := sql.Open("mysql", config.DbUri)
@@ -33,9 +34,7 @@ func (p Product) Write(pr []model.Product) {
 	}
 	defer stmtIns.Close()
 
-	stmtIns.Exec(pr[0].Name, 2.31)
-	stmtIns.Exec(pr[1].Name, 2.31)
-	//
-	fmt.Println("success")
+	stmtIns.Exec(pr.Name, 2.31)
 
+	fmt.Println("success")
 }

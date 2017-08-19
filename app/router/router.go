@@ -5,23 +5,18 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/lenovo-shop/app/config"
+	"github.com/lenovo-shop/app/controller"
 	"net/http"
-	"github.com/lenovo-shop/app/model"
 )
 
 func GetRouter() http.Handler {
 	r := mux.NewRouter()
 	r.HandleFunc("/article", ArticleHandler)
-	r.HandleFunc("/read", ReadHandler)
-
-	fmt.Print(config.StaticFolder)
+	r.HandleFunc("/cart", controller.AddCart).Methods("POST")
+	r.HandleFunc("/cart", controller.GetCart).Methods("GET")
 
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticFolder)))
 	return r
-}
-
-func ReadHandler(writer http.ResponseWriter, request *http.Request) {
-	model.ReadCategories("./export.json")
 }
 
 func ArticleHandler(writer http.ResponseWriter, request *http.Request) {
