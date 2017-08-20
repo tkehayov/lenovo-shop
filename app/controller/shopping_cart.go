@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/lenovo-shop/app/model/cart"
 	"io/ioutil"
 	"log"
@@ -20,11 +21,12 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 	json.Unmarshal(b, &sc)
 
 	cs := cart.CartCookie{sc.ID, sc.Quantity}
-	cart.Add(w, cs)
+	cart.Add(w, req, cs)
 
 	cookie, error := cart.Get(req)
 	if error != nil {
-		log.Fatal(cookie)
+		fmt.Print(len(cookie))
+		cookie = append(cookie, cs)
 	}
 
 	b, err := json.Marshal(cookie)
@@ -42,5 +44,5 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 
-	log.Print(cookie.ID)
+	log.Print(cookie[0])
 }
