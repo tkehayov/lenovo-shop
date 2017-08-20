@@ -7,13 +7,12 @@ import (
 	"net/http"
 )
 
-type Cookie struct {
-	ID          string
-	ProductName string
-	Quantity    int
+type CartCookie struct {
+	ID       string
+	Quantity int
 }
 
-func Add(w http.ResponseWriter, c Cookie) {
+func Add(w http.ResponseWriter, c CartCookie) {
 	b, err := json.Marshal(c)
 	if err != nil {
 		log.Fatal(err)
@@ -24,7 +23,7 @@ func Add(w http.ResponseWriter, c Cookie) {
 	http.SetCookie(w, &cookie)
 }
 
-func Get(req *http.Request) (*Cookie, error) {
+func Get(req *http.Request) (*CartCookie, error) {
 	cookie, cerr := req.Cookie("cart")
 
 	if cerr != nil {
@@ -36,7 +35,7 @@ func Get(req *http.Request) (*Cookie, error) {
 		return nil, err
 	}
 
-	var c *Cookie
+	var c *CartCookie
 	if err := json.Unmarshal(data, &c); err != nil {
 		return nil, err
 	}

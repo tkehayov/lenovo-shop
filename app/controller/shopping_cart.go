@@ -9,9 +9,8 @@ import (
 )
 
 type ShoppingCart struct {
-	ID          string
-	ProductName string
-	Quantity    int
+	ID       string
+	Quantity int
 }
 
 func AddCart(w http.ResponseWriter, req *http.Request) {
@@ -20,10 +19,20 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 	b, _ := ioutil.ReadAll(req.Body)
 	json.Unmarshal(b, &sc)
 
-	cs := cart.Cookie{sc.ID, sc.ProductName, sc.Quantity}
+	cs := cart.CartCookie{sc.ID, sc.Quantity}
 	cart.Add(w, cs)
 
-	w.WriteHeader(201)
+	cookie, error := cart.Get(req)
+	if error != nil {
+		log.Fatal(cookie)
+	}
+
+	b, err := json.Marshal(cookie)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w.Write(b)
 }
 
 func GetCart(w http.ResponseWriter, req *http.Request) {
@@ -33,5 +42,5 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 
-	log.Print(cookie.ProductName)
+	log.Print(cookie.ID)
 }
