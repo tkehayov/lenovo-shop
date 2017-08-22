@@ -13,26 +13,19 @@ type CartCookie struct {
 }
 
 func Add(w http.ResponseWriter, req *http.Request, c CartCookie) {
-	var existedId bool
 	//retrieve shopping cart
 	cookies, errCookies := Get(req)
 	if errCookies != nil {
-		cookies = []CartCookie{}
+		cookies = append(cookies, c)
 	}
 
 	//increase quantity to an already exists product
 	for i := range cookies {
 		if cookies[i].ID == c.ID {
 			cookies[i].Quantity++
-			existedId = true
 
 			break
 		}
-	}
-
-	//add new product to shopping cart if not exists
-	if !existedId {
-		cookies = append(cookies, c)
 	}
 
 	//add shopping cart

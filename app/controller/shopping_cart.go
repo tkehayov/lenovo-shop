@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/lenovo-shop/app/model/cart"
 	"io/ioutil"
 	"log"
@@ -25,7 +24,6 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 
 	cookie, error := cart.Get(req)
 	if error != nil {
-		fmt.Print(len(cookie))
 		cookie = append(cookie, cs)
 	}
 
