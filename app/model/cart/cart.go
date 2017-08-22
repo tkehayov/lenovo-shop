@@ -3,6 +3,7 @@ package cart
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -12,22 +13,26 @@ type CartCookie struct {
 	Quantity int
 }
 
-func Add(w http.ResponseWriter, req *http.Request, c CartCookie) {
+func Add(w http.ResponseWriter, req *http.Request, c CartCookie, cc *[]CartCookie) {
 	//retrieve shopping cart
+	var hasQuantity bool
+
 	cookies, errCookies := Get(req)
-	if errCookies != nil {
-		cookies = append(cookies, c)
-	}
 
 	//increase quantity to an already exists product
 	for i := range cookies {
 		if cookies[i].ID == c.ID {
 			cookies[i].Quantity++
-
+			hasQuantity = true
 			break
 		}
 	}
 
+	if !hasQuantity || errCookies != nil {
+		cookies = append(cookies, c)
+	}
+
+	*cc = cookies
 	//add shopping cart
 	b, err := json.Marshal(cookies)
 	if err != nil {
