@@ -13,15 +13,29 @@ type CartCookie struct {
 }
 
 func Add(w http.ResponseWriter, req *http.Request, c CartCookie) {
+	var existedId bool
 	//retrieve shopping cart
 	cookies, errCookies := Get(req)
 	if errCookies != nil {
 		cookies = []CartCookie{}
 	}
 
-	//add shopping cart
-	cookies = append(cookies, c)
+	//increase quantity to an already exists product
+	for i := range cookies {
+		if cookies[i].ID == c.ID {
+			cookies[i].Quantity++
+			existedId = true
 
+			break
+		}
+	}
+
+	//add new product to shopping cart if not exists
+	if !existedId {
+		cookies = append(cookies, c)
+	}
+
+	//add shopping cart
 	b, err := json.Marshal(cookies)
 	if err != nil {
 		log.Fatal(err)
@@ -45,12 +59,9 @@ func Get(req *http.Request) ([]CartCookie, error) {
 
 	var c []CartCookie
 
-	//for i,v := range data{
 	if err := json.Unmarshal(data, &c); err != nil {
 		return nil, err
 	}
-
-	//}
 
 	return c, nil
 }

@@ -44,5 +44,5 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 
-	log.Print(cookie[0])
+	log.Print(cookie)
 }
