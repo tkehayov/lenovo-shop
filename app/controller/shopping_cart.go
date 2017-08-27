@@ -2,8 +2,8 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/lenovo-shop/app/model/cart"
+	"github.com/lenovo-shop/app/persistence"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -25,20 +25,28 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 	cc := make([]cart.CartCookie, 0)
 	cart.Add(w, req, cs, &cc)
 
-	b, err := json.Marshal(cc)
-	if err != nil {
-		log.Fatal(err)
-	}
+	b = marshal(cc)
 
 	w.Write(b)
 }
 
 func GetCart(w http.ResponseWriter, req *http.Request) {
-	cookie, err := cart.Get(req)
+	cart, err := cart.Get(req)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Print(cookie)
+	persistence.Get(1, 2, 3)
+	b := marshal(cart)
+
+	w.Write(b)
+}
+
+func marshal(cookie []cart.CartCookie) []byte {
+	b, err := json.Marshal(cookie)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return b
 }
