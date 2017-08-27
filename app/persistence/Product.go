@@ -51,7 +51,7 @@ func Get(ids ...int) {
 		args = append(args, value)
 	}
 
-	selDB, err := db.Query("SELECT id FROM products WHERE id in (?"+strings.Repeat(",?", len(ids)-1)+")", args...)
+	selDB, err := db.Query("SELECT name,price FROM products WHERE id in (?"+strings.Repeat(",?", len(ids)-1)+")", args...)
 
 	if err != nil {
 		log.Fatal(err.Error())
