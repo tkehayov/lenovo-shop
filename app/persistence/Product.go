@@ -10,7 +10,9 @@ import (
 )
 
 type Product struct {
-	Name string
+	ID    int
+	Price float32
+	Name  string
 }
 
 func Persist(pr Product) {
@@ -39,7 +41,9 @@ func Persist(pr Product) {
 	fmt.Println("success")
 }
 
-func Get(ids ...int) {
+func Get(ids ...int) []Product {
+	var product []Product
+
 	db, err := sql.Open("mysql", config.DbUri)
 	if err != nil {
 
@@ -51,20 +55,23 @@ func Get(ids ...int) {
 		args = append(args, value)
 	}
 
-	selDB, err := db.Query("SELECT name,price FROM products WHERE id in (?"+strings.Repeat(",?", len(ids)-1)+")", args...)
+	selDB, err := db.Query("SELECT id,name,price FROM products WHERE id in (?"+strings.Repeat(",?", len(ids)-1)+")", args...)
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
+	index := 0
 	for selDB.Next() {
-		var id string
-
-		err = selDB.Scan(&id)
+		product = append(product, Product{})
+		err = selDB.Scan(&product[index].ID, &product[index].Name, &product[index].Price)
+		index++
 
 		if err != nil {
-			panic(err.Error())
+			log.Fatal(err)
 		}
 	}
 	defer db.Close()
+
+	return product
 }

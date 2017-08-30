@@ -9,20 +9,28 @@ import (
 	"net/http"
 )
 
+type Cart struct {
+	Id       int `json:"id"`
+	Quantity int `json:"quantity"`
+}
+
 type ShoppingCart struct {
-	ID       string
+	Name     string
+	Price    float32
 	Quantity int
 }
 
 func AddCart(w http.ResponseWriter, req *http.Request) {
-	var sc ShoppingCart
+	var sc Cart
 
-	b, _ := ioutil.ReadAll(req.Body)
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Print(err)
+	}
 	json.Unmarshal(b, &sc)
+	cs := cart.CartCookie{sc.Id, sc.Quantity}
 
-	cs := cart.CartCookie{sc.ID, sc.Quantity}
-
-	cc := make([]cart.CartCookie, 0)
+	cc := []cart.CartCookie{}
 	cart.Add(w, req, cs, &cc)
 
 	b = marshal(cc)
@@ -31,19 +39,33 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetCart(w http.ResponseWriter, req *http.Request) {
+	var sc []ShoppingCart
+	var ids []int
+
 	cart, err := cart.Get(req)
 
 	if err != nil {
-		log.Fatal(err)
+		w.Write([]byte{})
+		return
 	}
 
-	persistence.Get(1, 2, 3)
-	b := marshal(cart)
+	for _, value := range cart {
+		ids = append(ids, value.ID)
+	}
+
+	pr := persistence.Get(ids...)
+
+	for index, value := range cart {
+		scart := ShoppingCart{pr[index].Name, pr[index].Price, value.Quantity}
+		sc = append(sc, scart)
+	}
+
+	b := marshal(sc)
 
 	w.Write(b)
 }
 
-func marshal(cookie []cart.CartCookie) []byte {
+func marshal(cookie interface{}) []byte {
 	b, err := json.Marshal(cookie)
 	if err != nil {
 		log.Fatal(err)
