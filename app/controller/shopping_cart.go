@@ -43,7 +43,7 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 	var ids []int
 
 	cart, err := cart.Get(req)
-
+	
 	if err != nil {
 		w.Write([]byte{})
 		return
