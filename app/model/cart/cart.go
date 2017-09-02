@@ -59,7 +59,6 @@ func Get(req *http.Request) ([]CartCookie, error) {
 	if err := json.Unmarshal(data, &c); err != nil {
 		return nil, err
 	}
-	log.Print(c)
 
 	return c, nil
 }

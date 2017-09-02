@@ -23,5 +23,4 @@ func ArticleHandler(writer http.ResponseWriter, request *http.Request) {
 	value := request.FormValue("Name")
 	fmt.Println(value)
 
-	fmt.Fprintf(writer, "love you so mucsshss")
 }
