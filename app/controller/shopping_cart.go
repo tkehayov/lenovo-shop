@@ -72,6 +72,10 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 	w.Write(b)
 }
 
+func DeleteCart(w http.ResponseWriter, req *http.Request) {
+	cart.Delete(w, req)
+}
+
 func marshal(cookie interface{}) []byte {
 	b, err := json.Marshal(cookie)
 	if err != nil {

@@ -3,8 +3,10 @@ package cart
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type CartCookie struct {
@@ -61,4 +63,44 @@ func Get(req *http.Request) ([]CartCookie, error) {
 	}
 
 	return c, nil
+}
+
+func Delete(w http.ResponseWriter, req *http.Request) {
+	cookie, cerr := req.Cookie("cart")
+	var c []CartCookie
+
+	vars := mux.Vars(req)
+	idVar := vars["id"]
+	id, errAtomic := strconv.Atoi(idVar)
+	if errAtomic != nil {
+		log.Print(errAtomic)
+	}
+
+	if cerr != nil {
+		log.Print(cerr)
+	}
+
+	data, err := base64.StdEncoding.DecodeString(cookie.Value)
+	if err != nil {
+		log.Print(cerr)
+	}
+
+	if err := json.Unmarshal(data, &c); err != nil {
+		log.Print(err)
+	}
+
+	for i, v := range c {
+		if v.ID == id {
+			c = append(c[:i], c[i+1:]...)
+		}
+	}
+	//todo remove duplication
+	b, err := json.Marshal(c)
+	if err != nil {
+		log.Fatal(err)
+	}
+	encodedCookie := http.Cookie{Name: "cart", Value: base64.StdEncoding.EncodeToString(b)}
+
+	http.SetCookie(w, &encodedCookie)
+
 }
