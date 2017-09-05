@@ -10,7 +10,7 @@ import (
 )
 
 type CartCookie struct {
-	ID       int
+	Id       int
 	Quantity int
 }
 
@@ -22,7 +22,7 @@ func Add(w http.ResponseWriter, req *http.Request, c CartCookie, cc *[]CartCooki
 
 	//increase quantity to an already exists product
 	for i := range cookies {
-		if cookies[i].ID == c.ID {
+		if cookies[i].Id == c.Id {
 			cookies[i].Quantity++
 			hasQuantity = true
 			break
@@ -39,14 +39,13 @@ func Add(w http.ResponseWriter, req *http.Request, c CartCookie, cc *[]CartCooki
 	if err != nil {
 		log.Fatal(err)
 	}
-	encodedCookie := http.Cookie{Name: "cart", Value: base64.StdEncoding.EncodeToString(b)}
+	encodedCookie := http.Cookie{Name: "shoppingcart", Value: base64.StdEncoding.EncodeToString(b)}
 
 	http.SetCookie(w, &encodedCookie)
 }
 
 func Get(req *http.Request) ([]CartCookie, error) {
-	cookie, cerr := req.Cookie("cart")
-
+	cookie, cerr := req.Cookie("shoppingcart")
 	if cerr != nil {
 		return nil, cerr
 	}
@@ -56,17 +55,17 @@ func Get(req *http.Request) ([]CartCookie, error) {
 		return nil, err
 	}
 
-	var c []CartCookie
+	var ca []CartCookie
 
-	if err := json.Unmarshal(data, &c); err != nil {
+	if err := json.Unmarshal(data, &ca); err != nil {
 		return nil, err
 	}
 
-	return c, nil
+	return ca, nil
 }
 
 func Delete(w http.ResponseWriter, req *http.Request) {
-	cookie, cerr := req.Cookie("cart")
+	cookie, cerr := req.Cookie("shoppingcart")
 	var c []CartCookie
 
 	vars := mux.Vars(req)
@@ -90,7 +89,7 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 	}
 
 	for i, v := range c {
-		if v.ID == id {
+		if v.Id == id {
 			c = append(c[:i], c[i+1:]...)
 		}
 	}
@@ -99,7 +98,7 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	encodedCookie := http.Cookie{Name: "cart", Value: base64.StdEncoding.EncodeToString(b)}
+	encodedCookie := http.Cookie{Name: "shoppingcart", Value: base64.StdEncoding.EncodeToString(b)}
 
 	http.SetCookie(w, &encodedCookie)
 

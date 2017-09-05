@@ -15,6 +15,7 @@ type Cart struct {
 }
 
 type ShoppingCart struct {
+	Id       int     `json:"id"`
 	Name     string  `json:"name"`
 	Price    float32 `json:"price"`
 	Quantity int     `json:"quantity"`
@@ -33,6 +34,7 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 		log.Print(err)
 	}
 	json.Unmarshal(b, &sc)
+
 	cs := cart.CartCookie{sc.Id, sc.Quantity}
 
 	cc := []cart.CartCookie{}
@@ -53,15 +55,14 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte{})
 		return
 	}
-
 	for _, value := range cart {
-		ids = append(ids, value.ID)
+		ids = append(ids, value.Id)
 	}
 
 	pr := persistence.Get(ids...)
 
 	for index, value := range cart {
-		scart := ShoppingCart{pr[index].Name, pr[index].Price, value.Quantity}
+		scart := ShoppingCart{pr[index].ID, pr[index].Name, pr[index].Price, value.Quantity}
 		overAllPrice = overAllPrice + (pr[index].Price * float32(value.Quantity))
 		sc = append(sc, scart)
 	}
@@ -71,7 +72,6 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 	b := marshal(c)
 	w.Write(b)
 }
-
 func DeleteCart(w http.ResponseWriter, req *http.Request) {
 	cart.Delete(w, req)
 }
