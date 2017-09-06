@@ -37,11 +37,7 @@ func Add(w http.ResponseWriter, req *http.Request, c CartCookie, cc *[]CartCooki
 	*cc = cookies
 	//add shopping cart
 
-	b, err := json.Marshal(cookies)
-	if err != nil {
-		log.Fatal(err)
-	}
-	encodedCookie := http.Cookie{Name: "shoppingcart", Path: "/", Value: base64.StdEncoding.EncodeToString(b)}
+	encodedCookie := marshalCookie(cookies)
 
 	http.SetCookie(w, &encodedCookie)
 }
@@ -96,13 +92,18 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 			c = append(c[:i], c[i+1:]...)
 		}
 	}
-	//todo remove duplication
-	b, err := json.Marshal(c)
+
+	encodedCookie := marshalCookie(c)
+
+	http.SetCookie(w, &encodedCookie)
+
+}
+
+func marshalCookie(cookies []CartCookie) http.Cookie {
+	b, err := json.Marshal(cookies)
 	if err != nil {
 		log.Fatal(err)
 	}
 	encodedCookie := http.Cookie{Name: "shoppingcart", Path: "/", Value: base64.StdEncoding.EncodeToString(b)}
-
-	http.SetCookie(w, &encodedCookie)
-
+	return encodedCookie
 }
