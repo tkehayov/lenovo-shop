@@ -49,6 +49,7 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 	var sc []ShoppingCart
 	var ids []int
 	var overAllPrice float32
+
 	cart, err := cart.Get(req)
 
 	if err != nil {
@@ -72,6 +73,7 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 	b := marshal(c)
 	w.Write(b)
 }
+
 func DeleteCart(w http.ResponseWriter, req *http.Request) {
 	cart.Delete(w, req)
 }

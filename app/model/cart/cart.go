@@ -22,6 +22,7 @@ func Add(w http.ResponseWriter, req *http.Request, c CartCookie, cc *[]CartCooki
 
 	//increase quantity to an already exists product
 	for i := range cookies {
+
 		if cookies[i].Id == c.Id {
 			cookies[i].Quantity++
 			hasQuantity = true
@@ -35,17 +36,19 @@ func Add(w http.ResponseWriter, req *http.Request, c CartCookie, cc *[]CartCooki
 
 	*cc = cookies
 	//add shopping cart
+
 	b, err := json.Marshal(cookies)
 	if err != nil {
 		log.Fatal(err)
 	}
-	encodedCookie := http.Cookie{Name: "shoppingcart", Value: base64.StdEncoding.EncodeToString(b)}
+	encodedCookie := http.Cookie{Name: "shoppingcart", Path: "/", Value: base64.StdEncoding.EncodeToString(b)}
 
 	http.SetCookie(w, &encodedCookie)
 }
 
 func Get(req *http.Request) ([]CartCookie, error) {
 	cookie, cerr := req.Cookie("shoppingcart")
+
 	if cerr != nil {
 		return nil, cerr
 	}
@@ -98,7 +101,7 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	encodedCookie := http.Cookie{Name: "shoppingcart", Value: base64.StdEncoding.EncodeToString(b)}
+	encodedCookie := http.Cookie{Name: "shoppingcart", Path: "/", Value: base64.StdEncoding.EncodeToString(b)}
 
 	http.SetCookie(w, &encodedCookie)
 
