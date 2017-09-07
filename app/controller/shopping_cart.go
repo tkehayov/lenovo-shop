@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"github.com/lenovo-shop/app/model/cart"
+	"github.com/lenovo-shop/app/model/delivery"
 	"github.com/lenovo-shop/app/persistence"
 	"io/ioutil"
 	"log"
@@ -76,6 +77,16 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 
 func DeleteCart(w http.ResponseWriter, req *http.Request) {
 	cart.Delete(w, req)
+}
+
+func Checkout(w http.ResponseWriter, req *http.Request) {
+	req.ParseForm()
+
+	firstName := req.Form["firstName"][0]
+	lastName := req.Form["lastName"][0]
+
+	d := delivery.Delivery{firstName, lastName}
+	delivery.Checkout(d)
 }
 
 func marshal(cookie interface{}) []byte {

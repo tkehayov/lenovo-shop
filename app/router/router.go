@@ -14,6 +14,8 @@ func GetRouter() http.Handler {
 	r.HandleFunc("/cart", controller.GetCart).Methods("GET")
 	r.HandleFunc("/cart/{id}", controller.DeleteCart).Methods("DELETE")
 
+	r.HandleFunc("/checkout", controller.Checkout).Methods("POST")
+
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticFolder)))
 	return r
 }
