@@ -3,11 +3,11 @@ package controller
 import (
 	"encoding/json"
 	"github.com/lenovo-shop/app/model/cart"
-	"github.com/lenovo-shop/app/model/delivery"
 	"github.com/lenovo-shop/app/persistence"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"github.com/lenovo-shop/app/model/order"
 )
 
 type Cart struct {
@@ -84,9 +84,12 @@ func Checkout(w http.ResponseWriter, req *http.Request) {
 
 	firstName := req.Form["firstName"][0]
 	lastName := req.Form["lastName"][0]
+	address := req.Form["address"][0]
+	location := req.Form["location"][0]
+	email := req.Form["email"][0]
 
-	d := delivery.Delivery{firstName, lastName}
-	delivery.Checkout(d)
+	d := order.Order{firstName, lastName, address, location, email}
+	order.Checkout(d)
 }
 
 func marshal(cookie interface{}) []byte {
