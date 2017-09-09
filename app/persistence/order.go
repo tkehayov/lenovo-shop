@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/lenovo-shop/app/config"
+	"github.com/lenovo-shop/app/model/cart"
 	"log"
 )
 
@@ -15,10 +16,17 @@ type Order struct {
 	Address   string
 	Location  string
 	Email     string
+	Cart      []cart.CartCookie
 }
 
 func MakeDelivery(order Order) {
 	db, err := sql.Open("mysql", config.DbUri)
+	tx, errT := db.Begin()
+	if errT != nil {
+		log.Fatal(err)
+	}
+	defer tx.Rollback()
+
 	if err != nil {
 		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
 	}
@@ -30,14 +38,13 @@ func MakeDelivery(order Order) {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
 
-	stmtIns, err := db.Prepare("INSERT INTO orders(firstName,lastName,address,location,email) VALUES( ?,?,?,?,? )")
+	stmt, err := tx.Prepare("INSERT INTO orders(firstname,lastname,address,location,email) VALUES( ?,?,?,?,? )")
 	if err != nil {
 		log.Println("turutututu")
 		log.Print(err)
 	}
-	defer stmtIns.Close()
 
-	stmtIns.Exec(order.Firstname, order.Lastname, order.Address, order.Location, order.Email)
-
+	stmt.Exec(order.Firstname, order.Lastname, order.Address, order.Location, order.Email)
+	tx.Commit()
 	fmt.Println("success")
 }

@@ -3,11 +3,11 @@ package controller
 import (
 	"encoding/json"
 	"github.com/lenovo-shop/app/model/cart"
+	"github.com/lenovo-shop/app/model/order"
 	"github.com/lenovo-shop/app/persistence"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"github.com/lenovo-shop/app/model/order"
 )
 
 type Cart struct {
@@ -88,7 +88,9 @@ func Checkout(w http.ResponseWriter, req *http.Request) {
 	location := req.Form["location"][0]
 	email := req.Form["email"][0]
 
-	d := order.Order{firstName, lastName, address, location, email}
+	//todo replace with real data
+	carts := []cart.CartCookie{}
+	d := order.Order{firstName, lastName, address, location, email, carts}
 	order.Checkout(d)
 }
 
