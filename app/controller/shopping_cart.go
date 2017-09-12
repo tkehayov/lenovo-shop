@@ -89,7 +89,8 @@ func Checkout(w http.ResponseWriter, req *http.Request) {
 	email := req.Form["email"][0]
 
 	//todo replace with real data
-	carts := []cart.CartCookie{}
+	dummyCart:=cart.CartCookie{1,2}
+	carts := []cart.CartCookie{dummyCart}
 	d := order.Order{firstName, lastName, address, location, email, carts}
 	order.Checkout(d)
 }

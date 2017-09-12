@@ -35,16 +35,27 @@ func MakeDelivery(order Order) {
 	// Open doesn't open a connection. Validate DSN data:
 	err = db.Ping()
 	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
+		log.Println(err.Error()) // proper error handling instead of panic in your app
 	}
 
-	stmt, err := tx.Prepare("INSERT INTO orders(firstname,lastname,address,location,email) VALUES( ?,?,?,?,? )")
+	stmtOrderProduct, err := tx.Prepare("INSERT INTO order_product(order_id,product_id,quantity) VALUES( ?,?,? )")
+	stmtOrder, err := tx.Prepare("INSERT INTO orders(firstname,lastname,address,location,email) VALUES( ?,?,?,?,? )")
 	if err != nil {
-		log.Println("turutututu")
 		log.Print(err)
 	}
+	result, bulkErr := stmtOrder.Exec(order.Firstname, order.Lastname, order.Address, order.Location, order.Email)
+	if bulkErr != nil {
+		log.Println(bulkErr.Error())
+	}
 
-	stmt.Exec(order.Firstname, order.Lastname, order.Address, order.Location, order.Email)
+	lastId, errLastId := result.LastInsertId()
+
+	if errLastId != nil {
+		log.Println(errLastId.Error())
+	}
+
+	stmtOrderProduct.Exec(lastId, order.Cart[0].Id, order.Cart[0].Quantity)
+
 	tx.Commit()
 	fmt.Println("success")
 }
