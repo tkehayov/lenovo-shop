@@ -1,4 +1,4 @@
-static
+app/static
 gin
 gin-bin
 export.json

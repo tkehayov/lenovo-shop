@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"github.com/lenovo-shop/app/model/cart"
 	"github.com/lenovo-shop/app/model/order"
-	"github.com/lenovo-shop/app/persistence"
+	//"github.com/lenovo-shop/app/persistence"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 type Cart struct {
@@ -47,6 +48,7 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetCart(w http.ResponseWriter, req *http.Request) {
+	log.Println("Welcome on cart")
 	var sc []ShoppingCart
 	var ids []int
 	var overAllPrice float32
@@ -61,13 +63,13 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 		ids = append(ids, value.Id)
 	}
 
-	pr := persistence.Get(ids...)
+	//pr := persistence.Get(ids...)
 
-	for index, value := range cart {
-		scart := ShoppingCart{pr[index].ID, pr[index].Name, pr[index].Price, value.Quantity}
-		overAllPrice = overAllPrice + (pr[index].Price * float32(value.Quantity))
-		sc = append(sc, scart)
-	}
+	//for index, value := range cart {
+	//scart := ShoppingCart{pr[index].ID, pr[index].Name, pr[index].Price, value.Quantity}
+	//overAllPrice = overAllPrice + (pr[index].Price * float32(value.Quantity))
+	//sc = append(sc, scart)
+	//}
 
 	c := ShoppingCartCookie{sc, overAllPrice}
 
@@ -88,10 +90,23 @@ func Checkout(w http.ResponseWriter, req *http.Request) {
 	location := req.Form["location"][0]
 	email := req.Form["email"][0]
 
-	//todo replace with real data
-	dummyCart:=cart.CartCookie{1,2}
-	carts := []cart.CartCookie{dummyCart}
-	d := order.Order{firstName, lastName, address, location, email, carts}
+	cookies, errCookie := cart.Get(req)
+
+	if errCookie != nil {
+		//TODO redirect to homepage
+		timeout := make(chan bool, 1)
+		go func() {
+			time.Sleep(10 * time.Second)
+			timeout <- true
+			http.Redirect(w, req, "http://www.google.com", 301)
+
+			return
+		}()
+
+		return
+	}
+
+	d := order.Order{firstName, lastName, address, location, email, cookies}
 	order.Checkout(d)
 }
 
