@@ -1,4 +1,4 @@
-package cart
+package model
 
 import (
 	"encoding/base64"
