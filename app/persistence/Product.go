@@ -13,6 +13,7 @@ type Product struct {
 	Name  string
 }
 
+// TODO DELL THIS STRUCT
 type ProductDell struct {
 	Price float32
 	Name  string
