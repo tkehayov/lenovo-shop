@@ -1,5 +1,11 @@
 package persistence
 
+import (
+	"fmt"
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
+	"log"
+)
 
 type Product struct {
 	ID    int
@@ -7,63 +13,38 @@ type Product struct {
 	Name  string
 }
 
-func Persist(pr Product) {
-	//log.Print(pr)
-	//
-	//db, err := sql.Open("mysql", config.DbUri)
-	//if err != nil {
-	//	panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
-	//}
-	//defer db.Close()
-	//
-	//// Open doesn't open a connection. Validate DSN data:
-	//err = db.Ping()
-	//if err != nil {
-	//	panic(err.Error()) // proper error handling instead of panic in your app
-	//}
-	//
-	//stmtIns, err := db.Prepare("INSERT INTO products VALUES( ?, ? )")
-	//if err != nil {
-	//	log.Print(err)
-	//}
-	//defer stmtIns.Close()
-	//
-	//stmtIns.Exec(pr.Name, 2.31)
-	//
-	//fmt.Println("success")
+type ProductDell struct {
+	Price float32
+	Name  string
 }
 
-func Get(ids ...int) []Product {
-	var product []Product
+func Persist(pr ProductDell) {
+	ctx := appengine.BackgroundContext()
 
-	//db, err := sql.Open("mysql", config.DbUri)
-	//if err != nil {
-	//
-	//	log.Fatal(err.Error())
-	//}
-	//
-	//args := []interface{}{}
-	//for _, value := range ids {
-	//	args = append(args, value)
-	//}
-	//
-	//selDB, err := db.Query("SELECT id,name,price FROM products WHERE id in (?"+strings.Repeat(",?", len(ids)-1)+")", args...)
-	//
-	//if err != nil {
-	//	log.Fatal(err.Error())
-	//}
-	//
-	//index := 0
-	//for selDB.Next() {
-	//	product = append(product, Product{})
-	//	err = selDB.Scan(&product[index].ID, &product[index].Name, &product[index].Price)
-	//	index++
-	//
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
-	//}
-	//defer db.Close()
+	k := datastore.NewKey(ctx, "Products", "", 0, nil)
 
-	return product
+	log.Print(pr)
+
+	if _, err := datastore.Put(ctx, k, &pr); err != nil {
+		log.Print(err)
+	}
+}
+
+func Get(keysID ...int64) []Product {
+	var products []Product
+
+	ctx := appengine.BackgroundContext()
+	keys := []*datastore.Key{}
+
+	for _, keyID := range keysID {
+		fmt.Print(keyID)
+		ka := datastore.NewKey(ctx, "Products", "", keyID, nil)
+		keys = append(keys, ka)
+	}
+
+	if err := datastore.GetMulti(ctx, keys, products); err != nil {
+		log.Print("err   ", err)
+	}
+
+	return products
 }

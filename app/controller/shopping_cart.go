@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/lenovo-shop/app/model/cart"
 	"github.com/lenovo-shop/app/model/order"
-	//"github.com/lenovo-shop/app/persistence"
+	"github.com/lenovo-shop/app/persistence"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -48,7 +48,9 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetCart(w http.ResponseWriter, req *http.Request) {
-	log.Println("Welcome on cart")
+	//TODO getting ids from request
+	persistence.Get(5944509615570944, 5838406743490560)
+
 	var sc []ShoppingCart
 	var ids []int
 	var overAllPrice float32
