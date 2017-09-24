@@ -13,13 +13,7 @@ type Product struct {
 	Name  string
 }
 
-// TODO DELL THIS STRUCT
-type ProductDell struct {
-	Price float32
-	Name  string
-}
-
-func Persist(pr ProductDell) {
+func Persist(pr Product) {
 	ctx := appengine.BackgroundContext()
 
 	k := datastore.NewKey(ctx, "Products", "", 0, nil)

@@ -24,7 +24,7 @@ func AddProduct(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	pr := persistence.ProductDell{Price: product.Price, Name: product.Name}
+	pr := persistence.Product{Price: product.Price, Name: product.Name}
 
 	persistence.Persist(pr)
 }
