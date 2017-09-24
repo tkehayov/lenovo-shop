@@ -1,7 +1,6 @@
 package persistence
 
 import (
-	"fmt"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
 	"log"
@@ -26,19 +25,17 @@ func Persist(pr Product) {
 }
 
 func Get(keysID ...int64) []Product {
-	var products []Product
+	products := make([]Product, len(keysID))
 
 	ctx := appengine.BackgroundContext()
 	keys := []*datastore.Key{}
 
 	for _, keyID := range keysID {
-		fmt.Print(keyID)
 		ka := datastore.NewKey(ctx, "Products", "", keyID, nil)
 		keys = append(keys, ka)
 	}
-
 	if err := datastore.GetMulti(ctx, keys, products); err != nil {
-		log.Print("err   ", err)
+		log.Print(err)
 	}
 
 	return products

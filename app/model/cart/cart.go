@@ -1,4 +1,4 @@
-package model
+package cart
 
 import (
 	"encoding/base64"
@@ -10,7 +10,7 @@ import (
 )
 
 type CartCookie struct {
-	Id       int
+	Id       int64
 	Quantity int
 }
 
@@ -69,9 +69,9 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 
 	vars := mux.Vars(req)
 	idVar := vars["id"]
-	id, errAtomic := strconv.Atoi(idVar)
-	if errAtomic != nil {
-		log.Print(errAtomic)
+	id, errParsing := strconv.ParseInt(idVar,10,64)
+	if errParsing != nil {
+		log.Print(errParsing)
 	}
 
 	if cerr != nil {
