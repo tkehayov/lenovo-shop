@@ -46,7 +46,7 @@ func Get(keysID ...int64) []Product {
 
 	errProducts := dsClient.GetMulti(ctx, keys, products)
 	if errProducts != nil {
-		log.Fatal(errProducts)
+		log.Fatal("errProducts", errProducts)
 	}
 
 	return products
