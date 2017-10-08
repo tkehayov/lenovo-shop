@@ -1,61 +1,71 @@
 package persistence
 
 import (
-	"database/sql"
-	"fmt"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/lenovo-shop/app/config"
-	"github.com/lenovo-shop/app/model/cart"
+	"cloud.google.com/go/datastore"
+	"context"
 	"log"
+	"os"
 )
 
 type Order struct {
-	ID        int
-	Firstname string
-	Lastname  string
-	Address   string
-	Location  string
-	Email     string
-	Cart      []cart.CartCookie
+	Firstname      string
+	Lastname       string
+	Address        string
+	Location       string
+	Email          string
+	Products       []*datastore.Key
+	ProductsEntity []Product
 }
 
-func MakeDelivery(order Order) {
-	db, err := sql.Open("mysql", config.DbUri)
-	tx, errT := db.Begin()
-	if errT != nil {
+func MakeOrder(order Order, ids ...int64) {
+	var keys []*datastore.Key
+
+	ctx := context.Background()
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
+	if err != nil {
 		log.Fatal(err)
 	}
-	defer tx.Rollback()
+	//	Loop and append keys
+	for _, id := range ids {
+		idKey := datastore.IDKey("Products", id, nil)
+		keys = append(keys, idKey)
+	}
+	order.Products = keys
 
+	orderKey := datastore.IncompleteKey("Orders", nil)
+
+	if _, err := dsClient.Put(ctx, orderKey, &order); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func ListOrders() []Order {
+	var entities []Order
+
+	ctx := context.Background()
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
 	if err != nil {
-		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
-	}
-	defer db.Close()
-
-	// Open doesn't open a connection. Validate DSN data:
-	err = db.Ping()
-	if err != nil {
-		log.Println(err.Error()) // proper error handling instead of panic in your app
+		log.Fatal(err)
 	}
 
-	stmtOrderProduct, err := tx.Prepare("INSERT INTO order_product(order_id,product_id,quantity) VALUES( ?,?,? )")
-	stmtOrder, err := tx.Prepare("INSERT INTO orders(firstname,lastname,address,location,email) VALUES( ?,?,?,?,? )")
-	if err != nil {
-		log.Print(err)
+	q := datastore.NewQuery("Orders").Limit(10)
+	dsClient.GetAll(ctx, q, &entities)
+
+	for index, order := range entities {
+		var product Product
+		var productOrder []Product
+
+		for _, p := range order.Products {
+			dsClient.Get(ctx, p, &product)
+			productOrder = append(productOrder, product)
+		}
+
+		log.Fatal("productOrder", productOrder)
+		order.ProductsEntity = productOrder
+		entities[index] = order
 	}
-	result, bulkErr := stmtOrder.Exec(order.Firstname, order.Lastname, order.Address, order.Location, order.Email)
-	if bulkErr != nil {
-		log.Println(bulkErr.Error())
-	}
 
-	lastId, errLastId := result.LastInsertId()
+	log.Fatal("entities", entities)
 
-	if errLastId != nil {
-		log.Println(errLastId.Error())
-	}
-
-	stmtOrderProduct.Exec(lastId, order.Cart[0].Id, order.Cart[0].Quantity)
-
-	tx.Commit()
-	fmt.Println("success")
+	return entities
 }

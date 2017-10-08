@@ -1,77 +1,78 @@
 package persistence
 
 import (
-	"database/sql"
-	"fmt"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/lenovo-shop/app/config"
+	"cloud.google.com/go/datastore"
+	"context"
 	"log"
-	"strings"
+	"os"
 )
 
 type Product struct {
-	ID    int
+	ID    int64
 	Price float32
 	Name  string
 }
 
 func Persist(pr Product) {
-	log.Print(pr)
-
-	db, err := sql.Open("mysql", config.DbUri)
+	ctx := context.Background()
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
 	if err != nil {
-		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
-	}
-	defer db.Close()
-
-	// Open doesn't open a connection. Validate DSN data:
-	err = db.Ping()
-	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
+		log.Fatal(err)
 	}
 
-	stmtIns, err := db.Prepare("INSERT INTO products VALUES( ?, ? )")
-	if err != nil {
-		log.Print(err)
+	productKey := datastore.IncompleteKey("Products", nil)
+
+	products := &Product{Price: pr.Price, Name: pr.Name}
+	if _, err := dsClient.Put(ctx, productKey, products); err != nil {
+		log.Fatal(err)
 	}
-	defer stmtIns.Close()
-
-	stmtIns.Exec(pr.Name, 2.31)
-
-	fmt.Println("success")
 }
 
-func Get(ids ...int) []Product {
-	var product []Product
+func Get(keysID ...int64) []Product {
+	products := make([]Product, len(keysID))
+	keys := []*datastore.Key{}
 
-	db, err := sql.Open("mysql", config.DbUri)
-	if err != nil {
-
-		log.Fatal(err.Error())
-	}
-
-	args := []interface{}{}
-	for _, value := range ids {
-		args = append(args, value)
-	}
-
-	selDB, err := db.Query("SELECT id,name,price FROM products WHERE id in (?"+strings.Repeat(",?", len(ids)-1)+")", args...)
+	ctx := context.Background()
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
 
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 
-	index := 0
-	for selDB.Next() {
-		product = append(product, Product{})
-		err = selDB.Scan(&product[index].ID, &product[index].Name, &product[index].Price)
-		index++
-
-		if err != nil {
-			log.Fatal(err)
-		}
+	for _, id := range keysID {
+		k := datastore.IDKey("Products", id, nil)
+		keys = append(keys, k)
 	}
-	defer db.Close()
 
-	return product
+	errProducts := dsClient.GetMulti(ctx, keys, products)
+	if errProducts != nil {
+		log.Fatal("errProducts", errProducts)
+	}
+
+	return products
+}
+
+func GetAll() []Product {
+	var products []Product
+
+	ctx := context.Background()
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	q := datastore.NewQuery("Products")
+
+	keys, erra := dsClient.GetAll(ctx, q, &products)
+
+	if erra != nil {
+		log.Fatal(erra)
+	}
+
+	for index, k := range keys {
+		products[index].ID = k.ID
+	}
+	log.Fatal(products)
+
+	return products
 }

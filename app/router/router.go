@@ -1,21 +1,31 @@
 package router
 
 import (
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
-	"github.com/lenovo-shop/app/config"
 	"github.com/lenovo-shop/app/controller"
+	"github.com/lenovo-shop/app/shared"
 	"net/http"
 )
 
-func GetRouter() http.Handler {
+func GetRouter(mode shared.Mode) http.Handler {
 	r := mux.NewRouter()
+
+	// CART
 	r.HandleFunc("/cart", controller.AddCart).Methods("POST")
 	r.HandleFunc("/cart", controller.GetCart).Methods("GET")
 	r.HandleFunc("/cart/{id}", controller.DeleteCart).Methods("DELETE")
 
-	r.HandleFunc("/checkout", controller.Checkout).Methods("POST")
+	// Orders
+	r.HandleFunc("/order", controller.Order).Methods("POST")
+	r.HandleFunc("/order", controller.ListOrders).Methods("GET")
 
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticFolder)))
+	// PRODUCTS
+	r.HandleFunc("/product", controller.AddProduct).Methods("POST")
+	// TODO add some params in endpoint
+	r.HandleFunc("/product", controller.GetProduct).Methods("GET")
+	r.HandleFunc("/products/all", controller.GetAllProduct).Methods("GET")
+
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir(mode.StaticPath())))
+
 	return r
 }

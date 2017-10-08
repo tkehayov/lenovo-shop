@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/json"
 	"github.com/lenovo-shop/app/model/cart"
-	"github.com/lenovo-shop/app/model/order"
 	"github.com/lenovo-shop/app/persistence"
 	"io/ioutil"
 	"log"
@@ -11,12 +10,12 @@ import (
 )
 
 type Cart struct {
-	Id       int `json:"id"`
-	Quantity int `json:"quantity"`
+	Id       int64 `json:"id"`
+	Quantity int   `json:"quantity"`
 }
 
 type ShoppingCart struct {
-	Id       int     `json:"id"`
+	Id       int64   `json:"id"`
 	Name     string  `json:"name"`
 	Price    float32 `json:"price"`
 	Quantity int     `json:"quantity"`
@@ -32,7 +31,7 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 
 	b, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		log.Print(err)
+		log.Fatal(err)
 	}
 	json.Unmarshal(b, &sc)
 
@@ -47,12 +46,12 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetCart(w http.ResponseWriter, req *http.Request) {
+	//TODO getting ids from request
 	var sc []ShoppingCart
-	var ids []int
+	var ids []int64
 	var overAllPrice float32
 
 	cart, err := cart.Get(req)
-
 	if err != nil {
 		w.Write([]byte{})
 		return
@@ -77,22 +76,6 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 
 func DeleteCart(w http.ResponseWriter, req *http.Request) {
 	cart.Delete(w, req)
-}
-
-func Checkout(w http.ResponseWriter, req *http.Request) {
-	req.ParseForm()
-
-	firstName := req.Form["firstName"][0]
-	lastName := req.Form["lastName"][0]
-	address := req.Form["address"][0]
-	location := req.Form["location"][0]
-	email := req.Form["email"][0]
-
-	//todo replace with real data
-	dummyCart:=cart.CartCookie{1,2}
-	carts := []cart.CartCookie{dummyCart}
-	d := order.Order{firstName, lastName, address, location, email, carts}
-	order.Checkout(d)
 }
 
 func marshal(cookie interface{}) []byte {
