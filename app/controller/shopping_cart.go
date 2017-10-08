@@ -3,12 +3,10 @@ package controller
 import (
 	"encoding/json"
 	"github.com/lenovo-shop/app/model/cart"
-	"github.com/lenovo-shop/app/model/order"
 	"github.com/lenovo-shop/app/persistence"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 )
 
 type Cart struct {
@@ -17,7 +15,7 @@ type Cart struct {
 }
 
 type ShoppingCart struct {
-	Id       int     `json:"id"`
+	Id       int64   `json:"id"`
 	Name     string  `json:"name"`
 	Price    float32 `json:"price"`
 	Quantity int     `json:"quantity"`
@@ -33,7 +31,7 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 
 	b, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		log.Print(err)
+		log.Fatal(err)
 	}
 	json.Unmarshal(b, &sc)
 
@@ -49,14 +47,11 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 
 func GetCart(w http.ResponseWriter, req *http.Request) {
 	//TODO getting ids from request
-	log.Print("tuk")
-
 	var sc []ShoppingCart
 	var ids []int64
 	var overAllPrice float32
 
 	cart, err := cart.Get(req)
-
 	if err != nil {
 		w.Write([]byte{})
 		return
@@ -66,9 +61,6 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 	}
 
 	pr := persistence.Get(ids...)
-	log.Print("idsidsidsidsidsidsidsids", pr)
-
-	//persistence.Get(5944509615570944, 5838406743490560)
 
 	for index, value := range cart {
 		scart := ShoppingCart{pr[index].ID, pr[index].Name, pr[index].Price, value.Quantity}
@@ -84,35 +76,6 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 
 func DeleteCart(w http.ResponseWriter, req *http.Request) {
 	cart.Delete(w, req)
-}
-
-func Checkout(w http.ResponseWriter, req *http.Request) {
-	req.ParseForm()
-
-	firstName := req.Form["firstName"][0]
-	lastName := req.Form["lastName"][0]
-	address := req.Form["address"][0]
-	location := req.Form["location"][0]
-	email := req.Form["email"][0]
-
-	cookies, errCookie := cart.Get(req)
-
-	if errCookie != nil {
-		//TODO redirect to homepage
-		timeout := make(chan bool, 1)
-		go func() {
-			time.Sleep(10 * time.Second)
-			timeout <- true
-			http.Redirect(w, req, "http://www.google.com", 301)
-
-			return
-		}()
-
-		return
-	}
-
-	d := order.Order{firstName, lastName, address, location, email, cookies}
-	order.Checkout(d)
 }
 
 func marshal(cookie interface{}) []byte {

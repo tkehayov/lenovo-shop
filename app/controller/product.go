@@ -19,7 +19,7 @@ func AddProduct(w http.ResponseWriter, req *http.Request) {
 	err := decoder.Decode(&product)
 
 	if err != nil {
-		log.Print(err)
+		log.Fatal(err)
 		w.WriteHeader(400)
 		return
 	}
@@ -27,4 +27,13 @@ func AddProduct(w http.ResponseWriter, req *http.Request) {
 	pr := persistence.Product{Price: product.Price, Name: product.Name}
 
 	persistence.Persist(pr)
+}
+
+func GetProduct(w http.ResponseWriter, req *http.Request) {
+
+	persistence.Get(1)
+}
+func GetAllProduct(w http.ResponseWriter, req *http.Request) {
+	persistence.GetAll()
+
 }

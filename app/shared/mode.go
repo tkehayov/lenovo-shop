@@ -26,8 +26,6 @@ func frontEndFolder() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return usr.HomeDir + "/projects/lenovo-shop/front-end"
 
-	///
-	//return usr.HomeDir + "/projects/lenovo-shop/go/src/github.com/lenovo-shop/app/static"
+	return usr.HomeDir + "/projects/lenovo-shop/front-end"
 }

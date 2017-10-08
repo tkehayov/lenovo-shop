@@ -1,42 +1,78 @@
 package persistence
 
 import (
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/datastore"
+	"cloud.google.com/go/datastore"
+	"context"
 	"log"
+	"os"
 )
 
 type Product struct {
-	ID    int
+	ID    int64
 	Price float32
 	Name  string
 }
 
 func Persist(pr Product) {
-	ctx := appengine.BackgroundContext()
+	ctx := context.Background()
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	k := datastore.NewKey(ctx, "Products", "", 0, nil)
+	productKey := datastore.IncompleteKey("Products", nil)
 
-	log.Print(pr)
-
-	if _, err := datastore.Put(ctx, k, &pr); err != nil {
-		log.Print(err)
+	products := &Product{Price: pr.Price, Name: pr.Name}
+	if _, err := dsClient.Put(ctx, productKey, products); err != nil {
+		log.Fatal(err)
 	}
 }
 
 func Get(keysID ...int64) []Product {
 	products := make([]Product, len(keysID))
-
-	ctx := appengine.BackgroundContext()
 	keys := []*datastore.Key{}
 
-	for _, keyID := range keysID {
-		ka := datastore.NewKey(ctx, "Products", "", keyID, nil)
-		keys = append(keys, ka)
+	ctx := context.Background()
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
+
+	if err != nil {
+		log.Fatal(err)
 	}
-	if err := datastore.GetMulti(ctx, keys, products); err != nil {
-		log.Print(err)
+
+	for _, id := range keysID {
+		k := datastore.IDKey("Products", id, nil)
+		keys = append(keys, k)
 	}
+
+	errProducts := dsClient.GetMulti(ctx, keys, products)
+	if errProducts != nil {
+		log.Fatal(errProducts)
+	}
+
+	return products
+}
+
+func GetAll() []Product {
+	var products []Product
+
+	ctx := context.Background()
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	q := datastore.NewQuery("Products")
+
+	keys, erra := dsClient.GetAll(ctx, q, &products)
+
+	if erra != nil {
+		log.Fatal(erra)
+	}
+
+	for index, k := range keys {
+		products[index].ID = k.ID
+	}
+	log.Fatal(products)
 
 	return products
 }

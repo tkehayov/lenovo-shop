@@ -71,20 +71,20 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 	idVar := vars["id"]
 	id, errParsing := strconv.ParseInt(idVar,10,64)
 	if errParsing != nil {
-		log.Print(errParsing)
+		log.Fatal(errParsing)
 	}
 
 	if cerr != nil {
-		log.Print(cerr)
+		log.Fatal(cerr)
 	}
 
 	data, err := base64.StdEncoding.DecodeString(cookie.Value)
 	if err != nil {
-		log.Print(cerr)
+		log.Fatal(cerr)
 	}
 
 	if err := json.Unmarshal(data, &c); err != nil {
-		log.Print(err)
+		log.Fatal(err)
 	}
 
 	for i, v := range c {
