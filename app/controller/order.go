@@ -5,6 +5,7 @@ import (
 	"github.com/lenovo-shop/app/model/order"
 	"github.com/lenovo-shop/app/persistence"
 	"net/http"
+	"time"
 )
 
 func Order(w http.ResponseWriter, req *http.Request) {
@@ -24,6 +25,17 @@ func Order(w http.ResponseWriter, req *http.Request) {
 
 	d := order.Order{firstName, lastName, address, location, email, cookies}
 	order.Checkout(d)
+
+	c := &http.Cookie{
+		Name:    "shoppingcart",
+		Value:   "",
+		Path:    "/",
+		Expires: time.Unix(0, 0),
+
+		HttpOnly: true,
+	}
+
+	http.SetCookie(w, c)
 
 	http.Redirect(w, req, "/?message=Благодарим за поръчката! Ще се свържем с Вас възможно най скоро.", 301)
 
