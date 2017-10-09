@@ -4,9 +4,7 @@ import (
 	"github.com/lenovo-shop/app/model/cart"
 	"github.com/lenovo-shop/app/model/order"
 	"github.com/lenovo-shop/app/persistence"
-	"log"
 	"net/http"
-	"time"
 )
 
 func Order(w http.ResponseWriter, req *http.Request) {
@@ -21,22 +19,15 @@ func Order(w http.ResponseWriter, req *http.Request) {
 	cookies, errCookie := cart.Get(req)
 
 	if errCookie != nil {
-		log.Print("missing Cookie", errCookie)
-		//TODO redirect to homepage
-		timeout := make(chan bool, 1)
-		go func() {
-			time.Sleep(10 * time.Second)
-			timeout <- true
-			http.Redirect(w, req, "/", 301)
-
-			return
-		}()
-
-		return
+		http.Redirect(w, req, "/", 301)
 	}
 
 	d := order.Order{firstName, lastName, address, location, email, cookies}
 	order.Checkout(d)
+
+	http.Redirect(w, req, "/?message=Благодарим за поръчката! Ще се свържем с Вас възможно най скоро.", 301)
+
+	return
 }
 
 func ListOrders(w http.ResponseWriter, req *http.Request) {
