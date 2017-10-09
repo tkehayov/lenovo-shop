@@ -65,7 +65,7 @@ func ListOrders() []Order {
 		entities[index] = order
 	}
 
-	log.Fatal("entities", entities)
+	log.Print("entities", entities)
 
 	return entities
 }

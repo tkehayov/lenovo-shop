@@ -72,7 +72,7 @@ func GetAll() []Product {
 	for index, k := range keys {
 		products[index].ID = k.ID
 	}
-	log.Fatal(products)
+	log.Print(products)
 
 	return products
 }

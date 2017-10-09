@@ -6,6 +6,7 @@ import (
 	"github.com/lenovo-shop/app/persistence"
 	"log"
 	"net/http"
+	"time"
 )
 
 func Order(w http.ResponseWriter, req *http.Request) {
@@ -20,16 +21,16 @@ func Order(w http.ResponseWriter, req *http.Request) {
 	cookies, errCookie := cart.Get(req)
 
 	if errCookie != nil {
-		log.Fatal("error Cookie", errCookie)
+		log.Print("missing Cookie", errCookie)
 		//TODO redirect to homepage
-		//timeout := make(chan bool, 1)
-		//go func() {
-		//	time.Sleep(10 * time.Second)
-		//	timeout <- true
-		//	http.Redirect(w, req, "http://www.google.com", 301)
-		//
-		//	return
-		//}()
+		timeout := make(chan bool, 1)
+		go func() {
+			time.Sleep(10 * time.Second)
+			timeout <- true
+			http.Redirect(w, req, "/", 301)
+
+			return
+		}()
 
 		return
 	}
