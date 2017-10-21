@@ -21,15 +21,14 @@ func FilterProducts(filter Filter) []Product {
 		log.Fatal(err)
 	}
 
-	q := datastore.NewQuery("Products").Filter("ScreenSize=", filter.ScreenSizes[0])
-	_, errf := dsClient.GetAll(ctx, q, &products)
+	for _, screenSize := range filter.ScreenSizes {
+		q := datastore.NewQuery("Products").Filter("ScreenSize=", screenSize)
+		_, errf := dsClient.GetAll(ctx, q, &products)
 
-	if errf != nil {
-		log.Print(errf)
-	}
+		if errf != nil {
+			log.Print(errf)
+		}
 
-	if len(products) == 0 {
-		log.Print("No products found")
 	}
 
 	return products

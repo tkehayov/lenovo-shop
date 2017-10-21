@@ -26,9 +26,11 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 
 	products := persistence.FilterProducts(filter)
 	f := []Filter{}
+
 	for _, pr := range products {
 		f = append(f, Filter{pr.ID, pr.Price, pr.Name, pr.ScreenSize})
 	}
+
 	b := marshal(f)
 	w.Write(b)
 }
