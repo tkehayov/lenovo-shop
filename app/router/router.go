@@ -26,7 +26,7 @@ func GetRouter(mode shared.Mode) http.Handler {
 	r.HandleFunc("/products/all", controller.GetAllProduct).Methods("GET")
 
 	//Categories
-	r.HandleFunc("/categories/{category}", controller.GetCategoryProducts).Methods("GET")
+	r.HandleFunc("/categories/{category}", controller.FilterProducts).Methods("GET")
 
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir(mode.StaticPath())))
 
