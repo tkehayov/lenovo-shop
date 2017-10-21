@@ -8,9 +8,10 @@ import (
 )
 
 type Product struct {
-	ID    int64
-	Price float32
-	Name  string
+	ID         int64
+	Price      float32
+	Name       string
+	ScreenSize string
 }
 
 func Persist(pr Product) {
@@ -22,7 +23,7 @@ func Persist(pr Product) {
 
 	productKey := datastore.IncompleteKey("Products", nil)
 
-	products := &Product{Price: pr.Price, Name: pr.Name}
+	products := &Product{Price: pr.Price, Name: pr.Name, ScreenSize: pr.ScreenSize}
 	if _, err := dsClient.Put(ctx, productKey, products); err != nil {
 		log.Fatal(err)
 	}

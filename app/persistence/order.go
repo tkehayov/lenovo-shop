@@ -60,7 +60,7 @@ func ListOrders() []Order {
 			productOrder = append(productOrder, product)
 		}
 
-		log.Fatal("productOrder", productOrder)
+		log.Print("productOrder", productOrder)
 		order.ProductsEntity = productOrder
 		entities[index] = order
 	}

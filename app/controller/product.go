@@ -8,8 +8,9 @@ import (
 )
 
 type Product struct {
-	Price float32
-	Name  string
+	Price      float32
+	Name       string
+	ScreenSize string
 }
 
 func AddProduct(w http.ResponseWriter, req *http.Request) {
@@ -24,7 +25,7 @@ func AddProduct(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	pr := persistence.Product{Price: product.Price, Name: product.Name}
+	pr := persistence.Product{Price: product.Price, Name: product.Name, ScreenSize: product.ScreenSize}
 
 	persistence.Persist(pr)
 }
