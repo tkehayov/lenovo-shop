@@ -24,7 +24,16 @@ func FilterProducts(filter Filter) []Product {
 	}
 	log.Print(filter.ScreenSizes)
 	for _, screenSize := range filter.ScreenSizes {
-		q := datastore.NewQuery("Products").Filter("ScreenSize=", screenSize).Filter("Price>=", filter.PriceFrom).Filter("Price<=", filter.PriceTo)
+		q := datastore.NewQuery("Products")
+
+		if len(screenSize) != 0 {
+			q = q.Filter("ScreenSize=", screenSize)
+		}
+
+		if filter.PriceTo != 0 {
+			q = q.Filter("Price>=", filter.PriceFrom).Filter("Price<=", filter.PriceTo)
+		}
+
 		_, errf := dsClient.GetAll(ctx, q, &products)
 
 		if errf != nil {
