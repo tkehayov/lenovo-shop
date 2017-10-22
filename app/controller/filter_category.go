@@ -8,10 +8,10 @@ import (
 )
 
 type Filter struct {
-	ID         int64   `json:"id"`
-	Price      float32 `json:"price"`
-	Name       string  `json:"name"`
-	ScreenSize string  `json:"screenSize"`
+	ID         int64    `json:"id"`
+	PriceRange []string `json:"price"`
+	Name       string   `json:"name"`
+	ScreenSize string   `json:"screenSize"`
 }
 
 func FilterProducts(w http.ResponseWriter, req *http.Request) {
@@ -25,12 +25,12 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 	filter := persistence.Filter{ScreenSizes: screenSizes, Category: category}
 
 	products := persistence.FilterProducts(filter)
-	f := []Filter{}
 
+	prods := []Product{}
 	for _, pr := range products {
-		f = append(f, Filter{pr.ID, pr.Price, pr.Name, pr.ScreenSize})
+		prods = append(prods, Product{pr.Price, pr.Name, pr.ScreenSize})
 	}
 
-	b := marshal(f)
+	b := marshal(prods)
 	w.Write(b)
 }

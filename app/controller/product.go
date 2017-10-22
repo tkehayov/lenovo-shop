@@ -8,9 +8,9 @@ import (
 )
 
 type Product struct {
-	Price      float32
-	Name       string
-	ScreenSize string
+	Price      float32 `json:"price"`
+	Name       string  `json:"name"`
+	ScreenSize string  `json:"screenSize"`
 }
 
 func AddProduct(w http.ResponseWriter, req *http.Request) {
