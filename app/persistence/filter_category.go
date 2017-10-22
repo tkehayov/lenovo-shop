@@ -8,11 +8,14 @@ import (
 )
 
 type Filter struct {
-	ScreenSizes []string
-	Category    string
+	ScreenSizes    []string
+	Category       string
+	PriceRangeFrom float32
+	PriceRangeTo   float32
 }
 
 func FilterProducts(filter Filter) []Product {
+	log.Print(filter)
 	products := []Product{}
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
