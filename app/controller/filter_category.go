@@ -23,7 +23,7 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 
 	screenSizes := getMultiParam(req, "screenSizes", ",")
 	priceRange := getMultiParam(req, "priceRange", ",")
-
+	log.Print(screenSizes)
 	//Price From
 	prices := []string{}
 	for _, pricesFromTo := range priceRange { //[200-400,0-200]
@@ -31,7 +31,7 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 	}
 
 	min, max := normalizePriceRange(prices...)
-	filter := persistence.Filter{ScreenSizes: screenSizes, Category: category, PriceRangeFrom: float32(min), PriceRangeTo: float32(max)}
+	filter := persistence.Filter{ScreenSizes: screenSizes, Category: category, PriceFrom: float32(min), PriceTo: float32(max)}
 
 	products := persistence.FilterProducts(filter)
 

@@ -8,14 +8,13 @@ import (
 )
 
 type Filter struct {
-	ScreenSizes    []string
-	Category       string
-	PriceRangeFrom float32
-	PriceRangeTo   float32
+	ScreenSizes []string
+	Category    string
+	PriceFrom   float32
+	PriceTo     float32
 }
 
 func FilterProducts(filter Filter) []Product {
-	log.Print(filter)
 	products := []Product{}
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
@@ -23,9 +22,9 @@ func FilterProducts(filter Filter) []Product {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	log.Print(filter.ScreenSizes)
 	for _, screenSize := range filter.ScreenSizes {
-		q := datastore.NewQuery("Products").Filter("ScreenSize=", screenSize)
+		q := datastore.NewQuery("Products").Filter("ScreenSize=", screenSize).Filter("Price>=", filter.PriceFrom).Filter("Price<=", filter.PriceTo)
 		_, errf := dsClient.GetAll(ctx, q, &products)
 
 		if errf != nil {
