@@ -8,10 +8,11 @@ import (
 )
 
 type Product struct {
-	ID         int64
-	Price      float32
-	Name       string
-	ScreenSize string
+	Id           int64
+	Price        float32
+	Name         string
+	ScreenSize   string
+	ImagePreview string
 }
 
 func Persist(pr Product) {
@@ -23,7 +24,7 @@ func Persist(pr Product) {
 
 	productKey := datastore.IncompleteKey("Products", nil)
 
-	products := &Product{Price: pr.Price, Name: pr.Name, ScreenSize: pr.ScreenSize}
+	products := &Product{Price: pr.Price, Name: pr.Name, ScreenSize: pr.ScreenSize, ImagePreview: pr.ImagePreview}
 	if _, err := dsClient.Put(ctx, productKey, products); err != nil {
 		log.Fatal(err)
 	}
@@ -71,7 +72,7 @@ func GetAll() []Product {
 	}
 
 	for index, k := range keys {
-		products[index].ID = k.ID
+		products[index].Id = k.ID
 	}
 	log.Print(products)
 

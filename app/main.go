@@ -9,7 +9,7 @@ import (
 
 func main() {
 	mode := shared.DevMode{}
-	//Uncomment for production
+	//production Mode
 	//mode:=shared.ProdMode{}
 
 	http.Handle("/", router.GetRouter(mode))

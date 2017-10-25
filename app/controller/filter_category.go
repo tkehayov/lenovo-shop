@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/lenovo-shop/app/persistence"
+	"github.com/lenovo-shop/app/shared"
 	"log"
 	"net/http"
 	"sort"
@@ -17,9 +19,19 @@ type Filter struct {
 	ScreenSize string   `json:"screenSize"`
 }
 
+type FilterProduct struct {
+	Id           int64   `json:"id"`
+	Price        float32 `json:"price"`
+	Name         string  `json:"name"`
+	ScreenSize   string  `json:"screenSize"`
+	ImagePreview string  `json:"imagePreview"`
+}
+
 func FilterProducts(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	category := vars["category"]
+
+	mode := context.Get(req, "mode").(shared.Mode)
 
 	screenSizes := getMultiParam(req, "screenSizes", ",")
 	priceRange := getMultiParam(req, "priceRange", ",")
@@ -35,9 +47,10 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 
 	products := persistence.FilterProducts(filter)
 
-	prods := []Product{}
+	prods := []FilterProduct{}
 	for _, pr := range products {
-		prods = append(prods, Product{pr.Price, pr.Name, pr.ScreenSize})
+		log.Print("pr.Id", pr.Id)
+		prods = append(prods, FilterProduct{pr.Id, pr.Price, pr.Name, pr.ScreenSize, mode.ImagePath() + pr.ImagePreview})
 	}
 
 	b := marshal(prods)

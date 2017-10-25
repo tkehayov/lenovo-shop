@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/lenovo-shop/app/controller"
 	"github.com/lenovo-shop/app/shared"
@@ -9,6 +10,15 @@ import (
 
 func GetRouter(mode shared.Mode) http.Handler {
 	r := mux.NewRouter()
+
+	var getMode = func(f http.Handler) http.HandlerFunc {
+
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			context.Set(r, "mode", mode)
+
+			f.ServeHTTP(w, r)
+		})
+	}
 
 	// Cart
 	r.HandleFunc("/cart", controller.AddCart).Methods("POST")
@@ -26,7 +36,7 @@ func GetRouter(mode shared.Mode) http.Handler {
 	r.HandleFunc("/products/all", controller.GetAllProduct).Methods("GET")
 
 	//Categories
-	r.HandleFunc("/categories/{category}", controller.FilterProducts).Methods("GET")
+	r.HandleFunc("/categories/{category}", getMode(http.HandlerFunc(controller.FilterProducts))).Methods("GET")
 	r.HandleFunc("/categories", controller.AddCategory).Methods("POST")
 
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir(mode.StaticPath())))

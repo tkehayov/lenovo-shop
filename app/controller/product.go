@@ -8,9 +8,10 @@ import (
 )
 
 type Product struct {
-	Price      float32 `json:"price"`
-	Name       string  `json:"name"`
-	ScreenSize string  `json:"screenSize"`
+	Price        float32 `json:"price"`
+	Name         string  `json:"name"`
+	ScreenSize   string  `json:"screenSize"`
+	ImagePreview string  `json:"imagePreview"`
 }
 
 func AddProduct(w http.ResponseWriter, req *http.Request) {
@@ -24,8 +25,8 @@ func AddProduct(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-
-	pr := persistence.Product{Price: product.Price, Name: product.Name, ScreenSize: product.ScreenSize}
+	//mode.ImagePath() +
+	pr := persistence.Product{Price: product.Price, Name: product.Name, ScreenSize: product.ScreenSize, ImagePreview: product.ImagePreview}
 
 	persistence.Persist(pr)
 }
@@ -35,6 +36,8 @@ func GetProduct(w http.ResponseWriter, req *http.Request) {
 	persistence.Get(1)
 }
 func GetAllProduct(w http.ResponseWriter, req *http.Request) {
-	persistence.GetAll()
+	pr := persistence.GetAll()
 
+	b := marshal(pr)
+	w.Write(b)
 }

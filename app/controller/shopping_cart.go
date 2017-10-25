@@ -63,7 +63,7 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 	pr := persistence.Get(ids...)
 
 	for index, value := range cart {
-		scart := ShoppingCart{pr[index].ID, pr[index].Name, pr[index].Price, value.Quantity}
+		scart := ShoppingCart{pr[index].Id, pr[index].Name, pr[index].Price, value.Quantity}
 		overAllPrice = overAllPrice + (pr[index].Price * float32(value.Quantity))
 		sc = append(sc, scart)
 	}

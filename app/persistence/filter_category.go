@@ -15,14 +15,14 @@ type Filter struct {
 }
 
 func FilterProducts(filter Filter) []Product {
-	products := []Product{}
+	var products []Product
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print(filter.ScreenSizes)
+
 	for _, screenSize := range filter.ScreenSizes {
 		q := datastore.NewQuery("Products")
 
@@ -34,13 +34,18 @@ func FilterProducts(filter Filter) []Product {
 			q = q.Filter("Price>=", filter.PriceFrom).Filter("Price<=", filter.PriceTo)
 		}
 
-		_, errf := dsClient.GetAll(ctx, q, &products)
+		keys, errf := dsClient.GetAll(ctx, q, &products)
+
+		for index, k := range keys {
+			products[index].Id = k.ID
+		}
 
 		if errf != nil {
 			log.Print(errf)
 		}
-
 	}
+
+	log.Print(products)
 
 	return products
 }
