@@ -27,6 +27,12 @@ func FilterProducts(filter Filter) []Product {
 	for _, screenSize := range filter.ScreenSizes {
 
 		q := datastore.NewQuery("Products")
+		if filter.Category != "" {
+			log.Print("categoryyyyy", filter.Category)
+
+			k := datastore.NameKey("Category", filter.Category, nil)
+			q = q.Ancestor(k)
+		}
 
 		if len(screenSize) != 0 {
 			q = q.Filter("ScreenSize=", screenSize)
@@ -40,6 +46,7 @@ func FilterProducts(filter Filter) []Product {
 
 		for index, k := range keys {
 			products[index].Id = k.ID
+			products[index].Category = k.Parent.Name
 		}
 
 		if errf != nil {
