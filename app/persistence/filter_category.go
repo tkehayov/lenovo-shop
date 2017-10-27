@@ -12,6 +12,7 @@ type Filter struct {
 	Category    string
 	PriceFrom   float32
 	PriceTo     float32
+	Series      string
 }
 
 func FilterProducts(filter Filter) []Product {
@@ -24,6 +25,7 @@ func FilterProducts(filter Filter) []Product {
 	}
 
 	for _, screenSize := range filter.ScreenSizes {
+
 		q := datastore.NewQuery("Products")
 
 		if len(screenSize) != 0 {

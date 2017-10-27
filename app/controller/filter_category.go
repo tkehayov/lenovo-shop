@@ -12,12 +12,13 @@ import (
 	"strings"
 )
 
-type Filter struct {
-	ID         int64    `json:"id"`
-	PriceRange []string `json:"price"`
-	Name       string   `json:"name"`
-	ScreenSize string   `json:"screenSize"`
-}
+//type Filter struct {
+//	ID         int64    `json:"id"`
+//	PriceRange []string `json:"price"`
+//	Name       string   `json:"name"`
+//	ScreenSize string   `json:"screenSize"`
+//	Series     string
+//}
 
 type FilterProduct struct {
 	Id           int64   `json:"id"`
@@ -28,14 +29,17 @@ type FilterProduct struct {
 }
 
 func FilterProducts(w http.ResponseWriter, req *http.Request) {
+	params := req.URL.Query()
 	vars := mux.Vars(req)
 	category := vars["category"]
+
+	series := params.Get("series")
 
 	mode := context.Get(req, "mode").(shared.Mode)
 
 	screenSizes := getMultiParam(req, "screenSizes", ",")
 	priceRange := getMultiParam(req, "priceRange", ",")
-	log.Print(screenSizes)
+
 	//Price From
 	prices := []string{}
 	for _, pricesFromTo := range priceRange { //[200-400,0-200]
@@ -43,13 +47,13 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 	}
 
 	min, max := normalizePriceRange(prices...)
-	filter := persistence.Filter{ScreenSizes: screenSizes, Category: category, PriceFrom: float32(min), PriceTo: float32(max)}
+
+	filter := persistence.Filter{ScreenSizes: screenSizes, Category: category, PriceFrom: float32(min), PriceTo: float32(max), Series: series}
 
 	products := persistence.FilterProducts(filter)
 
 	prods := []FilterProduct{}
 	for _, pr := range products {
-		log.Print("pr.Id", pr.Id)
 		prods = append(prods, FilterProduct{pr.Id, pr.Price, pr.Name, pr.ScreenSize, mode.ImagePath() + pr.ImagePreview})
 	}
 
@@ -73,7 +77,8 @@ func normalizePriceRange(params ...string) (min float64, max float64) {
 
 func getMultiParam(req *http.Request, key string, separator string) []string {
 	params := req.URL.Query()
-	screenSizesParam := params.Get(key)
-	screenSizes := strings.Split(screenSizesParam, separator)
-	return screenSizes
+	multiParam := params.Get(key)
+	splitParams := strings.Split(multiParam, separator)
+
+	return splitParams
 }

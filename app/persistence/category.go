@@ -18,9 +18,9 @@ func AddCategory(category Category) {
 		log.Fatal(err)
 	}
 
-	productKey := datastore.IncompleteKey("Categories", nil)
+	key := datastore.NameKey("Categories", category.Name, nil)
 
-	if _, err := dsClient.Put(ctx, productKey, category); err != nil {
+	if _, err := dsClient.Put(ctx, key, &category); err != nil {
 		log.Fatal(err)
 	}
 
