@@ -12,14 +12,6 @@ import (
 	"strings"
 )
 
-//type Filter struct {
-//	ID         int64    `json:"id"`
-//	PriceRange []string `json:"price"`
-//	Name       string   `json:"name"`
-//	ScreenSize string   `json:"screenSize"`
-//	Series     string
-//}
-
 type FilterProduct struct {
 	Id           int64   `json:"id"`
 	Price        float32 `json:"price"`
