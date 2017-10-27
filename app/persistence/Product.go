@@ -13,6 +13,7 @@ type Product struct {
 	Name         string
 	ScreenSize   string
 	ImagePreview string
+	Category     string
 }
 
 func Persist(pr Product) {
@@ -22,7 +23,8 @@ func Persist(pr Product) {
 		log.Fatal(err)
 	}
 
-	productKey := datastore.IncompleteKey("Products", nil)
+	par := datastore.NameKey("Category", pr.Category, nil)
+	productKey := datastore.IncompleteKey("Products", par)
 
 	products := &Product{Price: pr.Price, Name: pr.Name, ScreenSize: pr.ScreenSize, ImagePreview: pr.ImagePreview}
 	if _, err := dsClient.Put(ctx, productKey, products); err != nil {
@@ -63,7 +65,8 @@ func GetAll() []Product {
 	if err != nil {
 		log.Fatal(err)
 	}
-	q := datastore.NewQuery("Products")
+	k := datastore.NameKey("Category", "лаптопи", nil)
+	q := datastore.NewQuery("Products").Ancestor(k)
 
 	keys, erra := dsClient.GetAll(ctx, q, &products)
 
@@ -73,6 +76,7 @@ func GetAll() []Product {
 
 	for index, k := range keys {
 		products[index].Id = k.ID
+		products[index].Category = k.Parent.Name
 	}
 	log.Print(products)
 
