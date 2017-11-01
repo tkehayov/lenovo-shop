@@ -36,7 +36,7 @@ func (dev DevMode) ImagePath() string {
 func frontEndFolder() string {
 	usr, err := user.Current()
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 	return usr.HomeDir + "/projects/lenovo-shop/front-end"

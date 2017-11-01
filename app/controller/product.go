@@ -11,6 +11,7 @@ type Product struct {
 	Price        float32 `json:"price"`
 	Name         string  `json:"name"`
 	Category     string  `json:"category"`
+	Series       string  `json:"series"`
 	ScreenSize   string  `json:"screenSize"`
 	ImagePreview string  `json:"imagePreview"`
 }
@@ -22,12 +23,12 @@ func AddProduct(w http.ResponseWriter, req *http.Request) {
 	err := decoder.Decode(&product)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 		w.WriteHeader(400)
 		return
 	}
 	//mode.ImagePath() +
-	pr := persistence.Product{Price: product.Price, Name: product.Name, ScreenSize: product.ScreenSize, ImagePreview: product.ImagePreview, Category: product.Category}
+	pr := persistence.Product{Price: product.Price, Name: product.Name, ScreenSize: product.ScreenSize, ImagePreview: product.ImagePreview, Category: product.Category, Series: product.Series}
 
 	persistence.Persist(pr)
 }

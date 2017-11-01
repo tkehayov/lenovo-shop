@@ -23,7 +23,7 @@ func MakeOrder(order Order, ids ...int64) {
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	//	Loop and append keys
 	for _, id := range ids {
@@ -35,7 +35,7 @@ func MakeOrder(order Order, ids ...int64) {
 	orderKey := datastore.IncompleteKey("Orders", nil)
 
 	if _, err := dsClient.Put(ctx, orderKey, &order); err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 }
 
@@ -45,7 +45,7 @@ func ListOrders() []Order {
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 	q := datastore.NewQuery("Orders").Limit(10)

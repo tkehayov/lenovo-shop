@@ -21,14 +21,12 @@ type FilterProduct struct {
 }
 
 func FilterProducts(w http.ResponseWriter, req *http.Request) {
-	params := req.URL.Query()
 	vars := mux.Vars(req)
 	category := vars["category"]
 
-	series := params.Get("series")
-
 	mode := context.Get(req, "mode").(shared.Mode)
 
+	series := getMultiParam(req, "series", ",")
 	screenSizes := getMultiParam(req, "screenSizes", ",")
 	priceRange := getMultiParam(req, "priceRange", ",")
 
@@ -39,7 +37,7 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 	}
 
 	min, max := normalizePriceRange(prices...)
-
+	log.Print("  series", series)
 	filter := persistence.Filter{ScreenSizes: screenSizes, Category: category, PriceFrom: float32(min), PriceTo: float32(max), Series: series}
 
 	products := persistence.FilterProducts(filter)

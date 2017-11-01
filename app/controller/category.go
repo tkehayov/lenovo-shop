@@ -18,7 +18,7 @@ func AddCategory(w http.ResponseWriter, req *http.Request) {
 	err := decoder.Decode(&category)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 		w.WriteHeader(400)
 		return
 	}

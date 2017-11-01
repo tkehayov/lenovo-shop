@@ -31,7 +31,7 @@ func AddCart(w http.ResponseWriter, req *http.Request) {
 
 	b, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	json.Unmarshal(b, &sc)
 
@@ -81,7 +81,7 @@ func DeleteCart(w http.ResponseWriter, req *http.Request) {
 func marshal(cookie interface{}) []byte {
 	b, err := json.Marshal(cookie)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	return b
 }

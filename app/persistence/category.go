@@ -15,13 +15,13 @@ func AddCategory(category Category) {
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 	key := datastore.NameKey("Categories", category.Name, nil)
 
 	if _, err := dsClient.Put(ctx, key, &category); err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 }

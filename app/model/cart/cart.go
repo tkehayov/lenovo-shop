@@ -69,22 +69,22 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 
 	vars := mux.Vars(req)
 	idVar := vars["id"]
-	id, errParsing := strconv.ParseInt(idVar,10,64)
+	id, errParsing := strconv.ParseInt(idVar, 10, 64)
 	if errParsing != nil {
-		log.Fatal(errParsing)
+		log.Print(errParsing)
 	}
 
 	if cerr != nil {
-		log.Fatal(cerr)
+		log.Print(cerr)
 	}
 
 	data, err := base64.StdEncoding.DecodeString(cookie.Value)
 	if err != nil {
-		log.Fatal(cerr)
+		log.Print(cerr)
 	}
 
 	if err := json.Unmarshal(data, &c); err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 	for i, v := range c {
@@ -102,7 +102,7 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 func marshalCookie(cookies []CartCookie) http.Cookie {
 	b, err := json.Marshal(cookies)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	encodedCookie := http.Cookie{Name: "shoppingcart", Path: "/", Value: base64.StdEncoding.EncodeToString(b)}
 	return encodedCookie

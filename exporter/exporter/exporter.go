@@ -33,7 +33,7 @@ func ReadCategories(filename string) {
 	content := readFile(filename)
 	enmErr := json.Unmarshal(content, &res)
 	if enmErr != nil {
-		log.Fatal(enmErr)
+		log.Print(enmErr)
 	}
 
 	var catIds int
@@ -74,7 +74,7 @@ func ReadProducts() []Product {
 	content := readFile("./export.json")
 	enmErr := json.Unmarshal(content, &res)
 	if enmErr != nil {
-		log.Fatal(enmErr)
+		log.Print(enmErr)
 	}
 
 	for index := range res.Product {
@@ -92,7 +92,7 @@ func readFile(filename string) []byte {
 	content, err := ioutil.ReadFile(filename)
 	log.Println(filename)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	return content
 }
