@@ -13,6 +13,8 @@ type Filter struct {
 	PriceFrom   float32
 	PriceTo     float32
 	Series      []string
+	Offset      int
+	Limit       int
 }
 
 func FilterProducts(filter Filter) []Product {
@@ -50,6 +52,9 @@ func FilterProducts(filter Filter) []Product {
 			q = q.Filter("Price>=", filter.PriceFrom).Filter("Price<=", filter.PriceTo)
 		}
 
+		//Pagination
+		q = q.Offset(filter.Offset).Limit(filter.Limit)
+
 		keys, errf := dsClient.GetAll(ctx, q, &products)
 		productKeys = append(productKeys, keys...)
 
@@ -67,6 +72,7 @@ func FilterProducts(filter Filter) []Product {
 
 	return products
 }
+
 func filterSeries(filter Filter, dsClient *datastore.Client, ctx context.Context, productsSeries []Product, seriesKeys []*datastore.Key) ([]Product, []*datastore.Key) {
 	for _, series := range filter.Series {
 		querySeries := datastore.NewQuery("Products")
@@ -75,6 +81,9 @@ func filterSeries(filter Filter, dsClient *datastore.Client, ctx context.Context
 			querySeries = querySeries.Filter("Series=", series)
 		}
 
+		//Pagination
+		querySeries = querySeries.Offset(filter.Offset).Limit(filter.Limit)
+
 		keys, errf := dsClient.GetAll(ctx, querySeries, &productsSeries)
 		seriesKeys = append(seriesKeys, keys...)
 
@@ -82,9 +91,11 @@ func filterSeries(filter Filter, dsClient *datastore.Client, ctx context.Context
 			log.Print(errf)
 		}
 	}
+
 	for index, _ := range productsSeries {
 		productsSeries[index].Id = seriesKeys[index].ID
 	}
+
 	return productsSeries, seriesKeys
 }
 

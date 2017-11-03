@@ -29,6 +29,9 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 	series := getMultiParam(req, "series", ",")
 	screenSizes := getMultiParam(req, "screenSizes", ",")
 	priceRange := getMultiParam(req, "priceRange", ",")
+	params := req.URL.Query()
+	offset := params.Get("page")
+	log.Print("offset", params.Get("page"))
 
 	//Price From
 	prices := []string{}
@@ -38,13 +41,25 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 
 	min, max := normalizePriceRange(prices...)
 	log.Print("  series", series)
-	filter := persistence.Filter{ScreenSizes: screenSizes, Category: category, PriceFrom: float32(min), PriceTo: float32(max), Series: series}
+
+	ofs, errOffset := strconv.Atoi(offset)
+
+	if errOffset != nil {
+		log.Print(errOffset)
+	}
+
+	filter := persistence.Filter{ScreenSizes: screenSizes, Category: category, PriceFrom: float32(min), PriceTo: float32(max), Series: series, Offset: ofs, Limit: 2}
 
 	products := persistence.FilterProducts(filter)
 
 	prods := []FilterProduct{}
 	for _, pr := range products {
-		prods = append(prods, FilterProduct{pr.Id, pr.Price, pr.Name, pr.ScreenSize, mode.ImagePath() + pr.ImagePreview})
+		prods = append(prods, FilterProduct{
+			pr.Id,
+			pr.Price,
+			pr.Name,
+			pr.ScreenSize,
+			mode.ImagePath() + pr.ImagePreview})
 	}
 
 	b := marshal(prods)
