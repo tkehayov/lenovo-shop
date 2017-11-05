@@ -14,9 +14,9 @@ type Filter struct {
 	PriceTo     float32
 	Series      []string
 	Limit       int
+	OrderPrice  string
 }
 
-//
 func FilterProducts(filter Filter) []Product {
 	var products []Product
 	var productsSeries []Product
@@ -38,6 +38,14 @@ func FilterProducts(filter Filter) []Product {
 	for _, screenSize := range filter.ScreenSizes {
 		q := datastore.NewQuery("Products")
 
+		if filter.OrderPrice == "priceAsc" {
+			q = q.Order("Price")
+		} else {
+			q = q.Order("-Price")
+
+		}
+		q = q.Limit(filter.Limit)
+
 		if filter.Category != "" {
 			q = q.Ancestor(kCat)
 		}
@@ -51,9 +59,6 @@ func FilterProducts(filter Filter) []Product {
 		if filter.PriceTo != 0 {
 			q = q.Filter("Price>=", filter.PriceFrom).Filter("Price<=", filter.PriceTo)
 		}
-
-		//Pagination
-		q = q.Limit(filter.Limit)
 
 		keys, errf := dsClient.GetAll(ctx, q, &products)
 		productKeys = append(productKeys, keys...)
@@ -75,14 +80,19 @@ func FilterProducts(filter Filter) []Product {
 
 func filterSeries(filter Filter, dsClient *datastore.Client, ctx context.Context, productsSeries []Product, seriesKeys []*datastore.Key) ([]Product, []*datastore.Key) {
 	for _, series := range filter.Series {
+		//TODO in factory method
 		querySeries := datastore.NewQuery("Products")
+		if filter.OrderPrice == "priceAsc" {
+			querySeries = querySeries.Order("Price")
+		} else {
+			querySeries = querySeries.Order("-Price")
+
+		}
+		querySeries = querySeries.Limit(filter.Limit)
 
 		if len(series) != 0 {
 			querySeries = querySeries.Filter("Series=", series)
 		}
-
-		//Pagination
-		querySeries = querySeries.Limit(filter.Limit)
 
 		keys, errf := dsClient.GetAll(ctx, querySeries, &productsSeries)
 		seriesKeys = append(seriesKeys, keys...)
