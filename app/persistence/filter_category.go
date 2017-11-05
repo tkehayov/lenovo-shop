@@ -13,10 +13,10 @@ type Filter struct {
 	PriceFrom   float32
 	PriceTo     float32
 	Series      []string
-	Offset      int
 	Limit       int
 }
 
+//
 func FilterProducts(filter Filter) []Product {
 	var products []Product
 	var productsSeries []Product
@@ -53,7 +53,7 @@ func FilterProducts(filter Filter) []Product {
 		}
 
 		//Pagination
-		q = q.Offset(filter.Offset).Limit(filter.Limit)
+		q = q.Limit(filter.Limit)
 
 		keys, errf := dsClient.GetAll(ctx, q, &products)
 		productKeys = append(productKeys, keys...)
@@ -82,7 +82,7 @@ func filterSeries(filter Filter, dsClient *datastore.Client, ctx context.Context
 		}
 
 		//Pagination
-		querySeries = querySeries.Offset(filter.Offset).Limit(filter.Limit)
+		querySeries = querySeries.Limit(filter.Limit)
 
 		keys, errf := dsClient.GetAll(ctx, querySeries, &productsSeries)
 		seriesKeys = append(seriesKeys, keys...)

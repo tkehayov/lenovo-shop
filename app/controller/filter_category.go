@@ -30,8 +30,8 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 	screenSizes := getMultiParam(req, "screenSizes", ",")
 	priceRange := getMultiParam(req, "priceRange", ",")
 	params := req.URL.Query()
-	offset := params.Get("page")
-	log.Print("offset", params.Get("page"))
+	limit := params.Get("limit")
+	log.Print("limit", params.Get("page"))
 
 	//Price From
 	prices := []string{}
@@ -42,13 +42,13 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 	min, max := normalizePriceRange(prices...)
 	log.Print("  series", series)
 
-	ofs, errOffset := strconv.Atoi(offset)
+	limitInt, errlimit := strconv.Atoi(limit)
 
-	if errOffset != nil {
-		log.Print(errOffset)
+	if errlimit != nil {
+		log.Print(errlimit)
 	}
-
-	filter := persistence.Filter{ScreenSizes: screenSizes, Category: category, PriceFrom: float32(min), PriceTo: float32(max), Series: series, Offset: ofs, Limit: 2}
+	log.Print("limitInt", limitInt)
+	filter := persistence.Filter{ScreenSizes: screenSizes, Category: category, PriceFrom: float32(min), PriceTo: float32(max), Series: series, Limit: limitInt}
 
 	products := persistence.FilterProducts(filter)
 
