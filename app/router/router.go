@@ -31,8 +31,8 @@ func GetRouter(mode shared.Mode) http.Handler {
 
 	// Products
 	r.HandleFunc("/product", controller.AddProduct).Methods("POST")
-	// TODO add some params in endpoint
-	r.HandleFunc("/product", controller.GetProduct).Methods("GET")
+	r.HandleFunc("/product/{id}", controller.GetProduct).Methods("GET")
+	//TODO Not using in productions(for test purpose because of missing datastore UI)
 	r.HandleFunc("/products/all", controller.GetAllProduct).Methods("GET")
 
 	//Categories
