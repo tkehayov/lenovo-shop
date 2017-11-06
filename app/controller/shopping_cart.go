@@ -60,7 +60,7 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 		ids = append(ids, value.Id)
 	}
 
-	pr := persistence.Get(ids...)
+	pr := persistence.GetMulti(ids...)
 
 	for index, value := range cart {
 		scart := ShoppingCart{pr[index].Id, pr[index].Name, pr[index].Price, value.Quantity}

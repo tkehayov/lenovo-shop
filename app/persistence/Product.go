@@ -33,7 +33,7 @@ func Persist(pr Product) {
 	}
 }
 
-func Get(keysID ...int64) []Product {
+func GetMulti(keysID ...int64) []Product {
 	products := make([]Product, len(keysID))
 	keys := []*datastore.Key{}
 
@@ -55,6 +55,29 @@ func Get(keysID ...int64) []Product {
 	}
 
 	return products
+}
+
+func Get(keyID int64) Product {
+	var product Product
+
+	ctx := context.Background()
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
+
+	if err != nil {
+		log.Print(err)
+	}
+
+	kCat := datastore.NameKey("Categories", "laptops", nil)
+	k := datastore.IDKey("Products", keyID, kCat)
+
+	errProducts := dsClient.Get(ctx, k, &product)
+	product.Id = k.ID
+
+	if errProducts != nil {
+		log.Print("errProduct s", errProducts)
+	}
+
+	return product
 }
 
 func GetAll() []Product {
