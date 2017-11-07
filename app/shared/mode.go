@@ -21,9 +21,8 @@ func (prodMode ProdMode) StaticPath() string {
 	return "./static"
 }
 
-//TODO change prodmode path
 func (dev ProdMode) ImagePath() string {
-	return frontEndFolder() + "/product-images"
+	return "./static/product-images"
 }
 
 func (dev DevMode) StaticPath() string {
