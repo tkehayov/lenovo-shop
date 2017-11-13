@@ -8,9 +8,9 @@ import (
 )
 
 func main() {
-	//mode := shared.DevMode{}
+	mode := shared.DevMode{}
 	//production Mode
-	mode := shared.ProdMode{}
+	//mode := shared.ProdMode{}
 
 	http.Handle("/", router.GetRouter(mode))
 	appengine.Main()
