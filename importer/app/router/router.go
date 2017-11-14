@@ -17,6 +17,8 @@ func GetRouter(mode shared.Mode) http.Handler {
 		r.HandleFunc("/test", model.GetVendor).Methods("GET")
 		r.HandleFunc("/groups/{id}", model.GetGroups).Methods("GET")
 
+		r.HandleFunc("/groupss/all", model.GetAllGroups).Methods("GET")
+
 		return r
 	}
 
