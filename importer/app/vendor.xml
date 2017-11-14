@@ -16,4 +16,8 @@
         <id>LG</id>
         <name>LG</name>
     </vendor>
+    <vendor>
+        <id>Lenovo-id</id>
+        <name>Lenovo</name>
+    </vendor>
 </vendors>

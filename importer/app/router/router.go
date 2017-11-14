@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/gorilla/mux"
 	"github.com/lenovo-shop/app/shared"
-	"github.com/lenovo-shop/importer/model"
+	"github.com/lenovo-shop/importer/app/model"
 	"net/http"
 	"reflect"
 )
@@ -15,6 +15,7 @@ func GetRouter(mode shared.Mode) http.Handler {
 	t := reflect.TypeOf(mode).String()
 	if t == "shared.DevMode" {
 		r.HandleFunc("/test", model.GetVendor).Methods("GET")
+		r.HandleFunc("/groups/{id}", model.GetGroups).Methods("GET")
 
 		return r
 	}

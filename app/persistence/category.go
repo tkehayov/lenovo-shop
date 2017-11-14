@@ -25,3 +25,19 @@ func AddCategory(category Category) {
 	}
 
 }
+
+func GetAllCategories() []Category {
+	ctx := context.Background()
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
+	if err != nil {
+		log.Print(err)
+	}
+
+	var cat []Category
+	q := datastore.NewQuery("Categories")
+	dsClient.GetAll(ctx, q, &cat)
+
+	log.Print(cat)
+
+	return cat
+}
