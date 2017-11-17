@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<products vendor_id="0006301183441" group_id="0006301178762" subgroup_id="0006301178773">
+    <product>
+        <available>на склад</available>
+        <catalog_num>#DELL00018</catalog_num>
+        <code>PRS</code>
+        <currency>USD</currency>
+        <description>Специална цена. Валидност до изчерпване на складовите наличности.</description>
+        <haracteristics> …. </haracteristics>
+        <id>0006301239395</id>
+        <model>Dell Studio XPS 13, P8400 (2.26GHz,1066MHz,3MB), 13.3&quot;  WXGA + 2.0MP Camera, 3072MB (1x1024+1x2048) DDR3, 320GB HDD, DVD+/-RW, nVidia 9500m 256MB, 802.11n, Bluetooth, Windows Vista Home Premium</model>
+        <name>Преносим компютър</name>
+        <kkprice>1403.9975</kkprice>
+        <price>1349.9976</price>
+        <price_dds>1349.9976</price_dds>
+
+        <small_picture>http://polycomp.bg/cache/thumb/2435895679.jpg</small_picture>
+    </product>
+    <product>
+        <available>на склад</available>
+        <catalog_num>#DELL00018</catalog_num>
+        <code>PRS</code>
+        <currency>USD</currency>
+        <description>Специална цена. Валидност до изчерпване на складовите наличности.</description>
+        <haracteristics> …. </haracteristics>
+        <id>0006301239395</id>
+        <model>Dell Studio XPS 13, P8400 (2.26GHz,1066MHz,3MB), 13.3&quot;  WXGA + 2.0MP Camera, 3072MB (1x1024+1x2048) DDR3, 320GB HDD, DVD+/-RW, nVidia 9500m 256MB, 802.11n, Bluetooth, Windows Vista Home Premium</model>
+        <name>Преносим компютър</name>
+        <kkprice>1403.9975</kkprice>
+        <price>1349.9976</price>
+        <price_dds>1349.9976</price_dds>
+
+        <small_picture>http://polycomp.bg/cache/thumb/2435895679.jpg</small_picture>
+    </product>
+
+</products>

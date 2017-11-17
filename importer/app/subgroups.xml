@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<subgroups vendor_id="0006301183441" group_id="0006301178762">
+    <subgroup>
+        <id>0006301178773</id>
+        <name>Studio</name>
+    </subgroup>
+    <subgroup>
+        <id>0006301178775</id>
+        <name>Inspiron</name>
+    </subgroup>
+</subgroups>

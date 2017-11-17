@@ -21,8 +21,8 @@ func AddGroup(groups []Groups) {
 	}
 	keys := []*datastore.Key{}
 	for _, group := range groups {
-		key := datastore.NameKey("Groups", group.Id, nil)
 
+		key := datastore.NameKey("Groups", group.Id, nil)
 		keys = append(keys, key)
 	}
 
