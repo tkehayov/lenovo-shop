@@ -72,9 +72,18 @@ func GetAllGroups(writer http.ResponseWriter, request *http.Request) {
 	writer.Write(b)
 }
 
-func GetSubGroups(writer http.ResponseWriter, request *http.Request) {
-	//vars := mux.Vars(request)
-	//vendorId := vars["vendorId"]
+func GetSubGroups(mode shared.Mode) {
+	resp, err := http.Get(mode.VendorUrls()["subgroups"])
+	if err != nil {
+		log.Print(err)
+	}
+
+	body, errRead := ioutil.ReadAll(resp.Body)
+
+	if errRead != nil {
+		log.Print(errRead)
+	}
+	fmt.Println("response Body:", string(body))
 
 	groups := importer.GetAllGroups()
 	subgr := GetAllSubGroups(groups)
