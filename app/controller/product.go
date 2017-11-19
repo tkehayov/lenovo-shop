@@ -13,8 +13,8 @@ type Product struct {
 	Price        float32 `json:"price"`
 	Name         string  `json:"name"`
 	Category     string  `json:"category"`
-	Series       string  `json:"series"`
 	ScreenSize   string  `json:"screenSize"`
+	SubCategory  string  `json:"subCategory"`
 	ImagePreview string  `json:"imagePreview"`
 }
 
@@ -29,7 +29,15 @@ func AddProduct(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	pr := persistence.Product{Price: product.Price, Name: product.Name, ScreenSize: product.ScreenSize, ImagePreview: product.ImagePreview, Category: product.Category, Series: product.Series}
+
+	pr := persistence.Product{
+		Price:        product.Price,
+		Name:         product.Name,
+		ScreenSize:   product.ScreenSize,
+		ImagePreview: product.ImagePreview,
+		Category:     product.Category,
+		SubCategory:  product.SubCategory,
+	}
 
 	persistence.Persist(pr)
 }
@@ -43,7 +51,14 @@ func GetProduct(w http.ResponseWriter, req *http.Request) {
 	}
 
 	pr := persistence.Get(id)
-	prDom := Product{pr.Price, pr.Name, pr.Category, pr.Series, pr.ScreenSize, pr.ImagePreview}
+	prDom := Product{
+		pr.Price,
+		pr.Name,
+		pr.Category,
+		pr.ScreenSize,
+		pr.SubCategory,
+		pr.ImagePreview,
+	}
 
 	b := marshal(prDom)
 	w.Write(b)

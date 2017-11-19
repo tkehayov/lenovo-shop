@@ -18,6 +18,7 @@ type FilterProduct struct {
 	Name         string  `json:"name"`
 	ScreenSize   string  `json:"screenSize"`
 	ImagePreview string  `json:"imagePreview"`
+	SubCategory  string  `json:"subCategory"`
 }
 
 func FilterProducts(w http.ResponseWriter, req *http.Request) {
@@ -26,7 +27,8 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 
 	mode := context.Get(req, "mode").(shared.Mode)
 
-	series := getMultiParam(req, "series", ",")
+	subCategory := getMultiParam(req, "subCategory", ",")
+
 	screenSizes := getMultiParam(req, "screenSizes", ",")
 	priceRange := getMultiParam(req, "priceRange", ",")
 	params := req.URL.Query()
@@ -52,9 +54,9 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 		Category:    category,
 		PriceFrom:   float32(min),
 		PriceTo:     float32(max),
-		Series:      series,
 		Limit:       limitInt,
 		OrderPrice:  orderPrice,
+		SubCategory: subCategory,
 	}
 
 	products := persistence.FilterProducts(filter)
@@ -66,7 +68,9 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 			pr.Price,
 			pr.Name,
 			pr.ScreenSize,
-			mode.ImagePath() + pr.ImagePreview})
+			mode.ImagePath() + pr.ImagePreview,
+			pr.SubCategory,
+		})
 	}
 
 	b := marshal(prods)

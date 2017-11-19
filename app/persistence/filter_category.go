@@ -12,7 +12,7 @@ type Filter struct {
 	Category    string
 	PriceFrom   float32
 	PriceTo     float32
-	Series      []string
+	SubCategory []string
 	Limit       int
 	OrderPrice  string
 }
@@ -79,7 +79,7 @@ func FilterProducts(filter Filter) []Product {
 }
 
 func filterSeries(filter Filter, dsClient *datastore.Client, ctx context.Context, productsSeries []Product, seriesKeys []*datastore.Key) ([]Product, []*datastore.Key) {
-	for _, series := range filter.Series {
+	for _, series := range filter.SubCategory {
 		//TODO in factory method
 		querySeries := datastore.NewQuery("Products")
 		if filter.OrderPrice == "priceAsc" {
@@ -91,7 +91,9 @@ func filterSeries(filter Filter, dsClient *datastore.Client, ctx context.Context
 		querySeries = querySeries.Limit(filter.Limit)
 
 		if len(series) != 0 {
-			querySeries = querySeries.Filter("Series=", series)
+			cat := datastore.NameKey("Categories", filter.Category, nil)
+			key := datastore.NameKey("SubCategories", series, cat)
+			querySeries = querySeries.Ancestor(key) // querySeries.Filter("Series=", series)
 		}
 
 		keys, errf := dsClient.GetAll(ctx, querySeries, &productsSeries)
