@@ -93,7 +93,7 @@ func filterSeries(filter Filter, dsClient *datastore.Client, ctx context.Context
 		if len(series) != 0 {
 			cat := datastore.NameKey("Categories", filter.Category, nil)
 			key := datastore.NameKey("SubCategories", series, cat)
-			querySeries = querySeries.Ancestor(key) // querySeries.Filter("Series=", series)
+			querySeries = querySeries.Ancestor(key)
 		}
 
 		keys, errf := dsClient.GetAll(ctx, querySeries, &productsSeries)
