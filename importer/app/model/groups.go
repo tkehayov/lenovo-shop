@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 )
 
 type Group struct {
@@ -23,7 +22,7 @@ type Groups struct {
 }
 
 type SubGroup struct {
-	GroupId  string      `xml:"group_id,attr"`
+	//GroupId  string      `xml:"group_id,attr"`
 	Subgroup []SubGroups `xml:"subgroup"`
 }
 
@@ -73,38 +72,46 @@ func GetAllGroups(writer http.ResponseWriter, request *http.Request) {
 }
 
 func GetSubGroups(mode shared.Mode) {
-	resp, err := http.Get(mode.VendorUrls()["subgroups"])
-	if err != nil {
-		log.Print(err)
-	}
-
-	body, errRead := ioutil.ReadAll(resp.Body)
-
-	if errRead != nil {
-		log.Print(errRead)
-	}
-	fmt.Println("response Body:", string(body))
-
 	groups := importer.GetAllGroups()
+	var unmSubGroups SubGroup
+
+	for _, gr := range groups {
+		resp, err := http.Get(mode.VendorUrls()["subgroups"] + "/" + gr.Id)
+		if err != nil {
+			log.Print(err)
+		}
+		body, errRead := ioutil.ReadAll(resp.Body)
+		if errRead != nil {
+			log.Print(errRead)
+		}
+		fmt.Println("response Body:", string(body))
+		xml.Unmarshal(body, &unmSubGroups)
+
+		log.Print("unmSubGroups: ", unmSubGroups)
+
+	}
+
+	var subGroupsImporter []importer.SubGroups
+	for _, subGro := range unmSubGroups.Subgroup {
+		subGrImp := importer.SubGroups{
+			subGro.Id,
+			subGro.Name,
+		}
+		subGroupsImporter = append(subGroupsImporter, subGrImp)
+	}
+
+	importer.AddSubGroups(subGroupsImporter)
+
 	subgr := GetAllSubGroups(groups)
 
 	log.Print(subgr)
 }
 
 func GetAllSubGroups(groups []importer.Groups) []SubGroups {
-
-	xmlFile, err := os.Open("subgroups.xml")
-	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return nil
-	}
-
-	defer xmlFile.Close()
-
-	b, _ := ioutil.ReadAll(xmlFile)
+	log.Print(groups)
 
 	var subGroups SubGroup
-	xml.Unmarshal(b, &subGroups)
+	//xml.Unmarshal(b, &subGroups)
 
 	return subGroups.Subgroup
 }
