@@ -14,7 +14,7 @@ type Product struct {
 	ScreenSize   string
 	ImagePreview string
 	Category     string
-	Series       string
+	SubCategory  string
 }
 
 func Persist(pr Product) {
@@ -25,9 +25,18 @@ func Persist(pr Product) {
 	}
 
 	cat := datastore.NameKey("Categories", pr.Category, nil)
-	productKey := datastore.IncompleteKey("Products", cat)
+	subCat := datastore.NameKey("SubCategories", pr.SubCategory, cat)
+	productKey := datastore.IncompleteKey("Products", subCat)
 
-	products := &Product{Price: pr.Price, Name: pr.Name, ScreenSize: pr.ScreenSize, ImagePreview: pr.ImagePreview, Category: pr.Category, Series: pr.Series}
+	products := &Product{
+		Price:        pr.Price,
+		Name:         pr.Name,
+		ScreenSize:   pr.ScreenSize,
+		ImagePreview: pr.ImagePreview,
+		Category:     pr.Category,
+		SubCategory:  pr.SubCategory,
+	}
+
 	if _, err := dsClient.Put(ctx, productKey, products); err != nil {
 		log.Print(err)
 	}
@@ -74,7 +83,7 @@ func Get(keyID int64) Product {
 	product.Id = k.ID
 
 	if errProducts != nil {
-		log.Print("errProduct s", errProducts)
+		log.Print("errProduct", errProducts)
 	}
 
 	return product
@@ -90,6 +99,7 @@ func GetAll() []Product {
 		log.Print(err)
 	}
 	kCat := datastore.NameKey("Categories", "laptops", nil)
+	//subCat := datastore.NameKey("SubCategories", "x1-carbon", nil)
 	q := datastore.NewQuery("Products").Ancestor(kCat)
 
 	keys, erra := dsClient.GetAll(ctx, q, &products)
