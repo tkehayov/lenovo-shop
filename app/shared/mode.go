@@ -38,8 +38,10 @@ func (dev DevMode) VendorUrls() map[string]string {
 	baseUrl := "http://localhost:9000"
 
 	return map[string]string{
+		"base":      baseUrl,
 		"groups":    baseUrl + "/groups/1",
 		"subgroups": baseUrl + "/subgroups/1",
+		"products":  baseUrl + "/products/1/2/3",
 	}
 }
 

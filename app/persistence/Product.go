@@ -42,6 +42,10 @@ func Persist(pr Product) {
 	}
 }
 
+func PersistMulti(pr []Product) {
+	log.Print("prrrr", pr)
+}
+
 func GetMulti(keysID ...int64) []Product {
 	products := make([]Product, len(keysID))
 	keys := []*datastore.Key{}

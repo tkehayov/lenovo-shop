@@ -71,7 +71,7 @@ func GetAllGroups(writer http.ResponseWriter, request *http.Request) {
 	writer.Write(b)
 }
 
-func GetSubGroups(mode shared.Mode) {
+func GetSubGroups(mode shared.Mode) ([]importer.SubGroups, []importer.Groups) {
 	groups := importer.GetAllGroups()
 	var unmSubGroups SubGroup
 
@@ -102,9 +102,7 @@ func GetSubGroups(mode shared.Mode) {
 
 	importer.AddSubGroups(subGroupsImporter)
 
-	subgr := GetAllSubGroups(groups)
-
-	log.Print(subgr)
+	return subGroupsImporter, groups
 }
 
 func GetAllSubGroups(groups []importer.Groups) []SubGroups {

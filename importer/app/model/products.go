@@ -3,15 +3,18 @@ package model
 import (
 	"encoding/xml"
 	"fmt"
+	app "github.com/lenovo-shop/app/persistence"
+	"github.com/lenovo-shop/app/shared"
+	importer "github.com/lenovo-shop/importer/app/persistence"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 )
 
 type Product struct {
 	Products []Products `xml:"product"`
 }
+
 type Products struct {
 	Description  string  `xml:"description"`
 	Model        string  `xml:"model"`
@@ -22,18 +25,49 @@ type Products struct {
 	SmallPicture string  `xml:"small_picture"`
 }
 
-func GetProducts(writer http.ResponseWriter, request *http.Request) {
-	xmlFile, err := os.Open("products.xml")
-	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return
+func GetProducts(mode shared.Mode, subgr []importer.SubGroups, group []importer.Groups) {
+	var pr Product
+	for _, gr := range group {
+		for _, s := range subgr {
+			resp, err := http.Get(mode.VendorUrls()["base"] + "/products/1/" + gr.Id + "/" + s.Id)
+			if err != nil {
+				log.Print(err)
+			}
+			body, errRead := ioutil.ReadAll(resp.Body)
+			if errRead != nil {
+				log.Print(errRead)
+			}
+			fmt.Println("response Body:", string(body))
+			xml.Unmarshal(body, &pr)
+		}
 	}
 
-	defer xmlFile.Close()
-	b, _ := ioutil.ReadAll(xmlFile)
+	var persProd []importer.Product
+	var appProds []app.Product
+	for _, prods := range pr.Products {
 
-	var product Product
-	xml.Unmarshal(b, &product)
+		products := importer.Product{
+			prods.Description,
+			prods.Model,
+			prods.Name,
+			prods.Kkprice,
+			prods.Price,
+			prods.PriceDds,
+			prods.SmallPicture,
+		}
 
-	log.Print(product)
+		// TODO Baby
+		appProd := app.Product{}
+
+		persProd = append(persProd, products)
+		appProds = append(appProds, appProd)
+
+		log.Print("persProd", persProd)
+	}
+
+	log.Print("appProds", appProds)
+
+	app.PersistMulti(appProds)
+	importer.AddMultiProduct()
+	log.Print(pr.Products)
 }

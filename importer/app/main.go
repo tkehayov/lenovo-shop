@@ -14,7 +14,8 @@ func main() {
 	//mode := shared.ProdMode{}
 
 	model.GetGroups(mode)
-	model.GetSubGroups(mode)
+	subgr, gr := model.GetSubGroups(mode)
+	model.GetProducts(mode, subgr, gr)
 
 	http.Handle("/", router.GetRouter(mode))
 	appengine.Main()
