@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/lenovo-shop/app/persistence"
+	appPers "github.com/lenovo-shop/app/persistence"
 	"github.com/lenovo-shop/app/shared"
 	importer "github.com/lenovo-shop/importer/app/persistence"
 	"io/ioutil"
@@ -32,8 +32,6 @@ type SubGroups struct {
 }
 
 func GetGroups(mode shared.Mode) {
-	//vars := mux.Vars(request)
-	//id := vars["id"]
 	resp, err := http.Get(mode.VendorUrls()["groups"])
 	if err != nil {
 		log.Print(err)
@@ -50,8 +48,8 @@ func GetGroups(mode shared.Mode) {
 	xml.Unmarshal(body, &groups)
 
 	for _, group := range groups.Group {
-		cat := persistence.Category{group.Name}
-		persistence.AddCategory(cat)
+		cat := appPers.Category{group.Name}
+		appPers.AddCategory(cat)
 	}
 
 	//add IDs into Provider group
@@ -76,7 +74,8 @@ func GetSubGroups(mode shared.Mode) ([]importer.SubGroups, []importer.Groups) {
 	var unmSubGroups SubGroup
 
 	for _, gr := range groups {
-		resp, err := http.Get(mode.VendorUrls()["subgroups"] + "/" + gr.Id)
+		resp, err := http.Get(mode.VendorUrls()["subgroups"] + gr.Id)
+		log.Print("grass ", mode.VendorUrls()["subgroups"]+gr.Id)
 		if err != nil {
 			log.Print(err)
 		}
@@ -84,11 +83,10 @@ func GetSubGroups(mode shared.Mode) ([]importer.SubGroups, []importer.Groups) {
 		if errRead != nil {
 			log.Print(errRead)
 		}
-		fmt.Println("response Body:", string(body))
+		fmt.Println("response Body subgroups: ", string(body))
 		xml.Unmarshal(body, &unmSubGroups)
 
 		log.Print("unmSubGroups: ", unmSubGroups)
-
 	}
 
 	var subGroupsImporter []importer.SubGroups
@@ -99,7 +97,7 @@ func GetSubGroups(mode shared.Mode) ([]importer.SubGroups, []importer.Groups) {
 		}
 		subGroupsImporter = append(subGroupsImporter, subGrImp)
 	}
-
+	log.Print("subGroupsImporter", subGroupsImporter)
 	importer.AddSubGroups(subGroupsImporter)
 
 	return subGroupsImporter, groups

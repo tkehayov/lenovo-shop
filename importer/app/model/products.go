@@ -3,7 +3,6 @@ package model
 import (
 	"encoding/xml"
 	"fmt"
-	app "github.com/lenovo-shop/app/persistence"
 	"github.com/lenovo-shop/app/shared"
 	importer "github.com/lenovo-shop/importer/app/persistence"
 	"io/ioutil"
@@ -12,11 +11,13 @@ import (
 )
 
 type Product struct {
+	GroupdId string     `xml:"groupd_id,attr"`
 	Products []Products `xml:"product"`
 }
 
 type Products struct {
 	Description  string  `xml:"description"`
+	Id           string  `xml:"id"`
 	Model        string  `xml:"model"`
 	Name         string  `xml:"name"`
 	Kkprice      float64 `xml:"kkprice"`
@@ -25,11 +26,18 @@ type Products struct {
 	SmallPicture string  `xml:"small_picture"`
 }
 
-func GetProducts(mode shared.Mode, subgr []importer.SubGroups, group []importer.Groups) {
+type ProductId struct {
+	Id string
+}
+
+func GetProducts(mode shared.Mode, subgr []importer.SubGroups, group []importer.Groups) []ProductId {
 	var pr Product
+	var productIds []ProductId
+
+	var prodsId []importer.ProductId
 	for _, gr := range group {
 		for _, s := range subgr {
-			resp, err := http.Get(mode.VendorUrls()["base"] + "/products/1/" + gr.Id + "/" + s.Id)
+			resp, err := http.Get(mode.VendorUrls()["products"] + gr.Id + "/" + s.Id)
 			if err != nil {
 				log.Print(err)
 			}
@@ -37,37 +45,32 @@ func GetProducts(mode shared.Mode, subgr []importer.SubGroups, group []importer.
 			if errRead != nil {
 				log.Print(errRead)
 			}
-			fmt.Println("response Body:", string(body))
+
+			fmt.Println("response Body products:", string(body))
 			xml.Unmarshal(body, &pr)
 		}
 	}
 
-	var persProd []importer.Product
-	var appProds []app.Product
 	for _, prods := range pr.Products {
-
-		products := importer.Product{
-			prods.Description,
-			prods.Model,
-			prods.Name,
-			prods.Kkprice,
-			prods.Price,
-			prods.PriceDds,
-			prods.SmallPicture,
+		prodId := importer.ProductId{
+			prods.Id,
 		}
-
-		// TODO Baby
-		appProd := app.Product{}
-
-		persProd = append(persProd, products)
-		appProds = append(appProds, appProd)
-
-		log.Print("persProd", persProd)
+		prodsId = append(prodsId, prodId)
 	}
 
-	log.Print("appProds", appProds)
+	importer.PersistMultiProducts(prodsId...)
+	prods := importer.GetAllProducts()
+	for _, prod := range prods {
+		productId := ProductId{
+			prod.Id,
+		}
+		productIds = append(productIds, productId)
+	}
 
-	app.PersistMulti(appProds)
-	importer.AddMultiProduct()
-	log.Print(pr.Products)
+	return productIds
+}
+
+func GetAllProducts(prods []ProductId) {
+	log.Print("prods ", prods)
+
 }

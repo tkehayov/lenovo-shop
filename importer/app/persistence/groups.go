@@ -16,6 +16,21 @@ type SubGroups struct {
 	Name string
 }
 
+func GetGroup(id string) Groups {
+	var gr Groups
+	ctx := context.Background()
+
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
+
+	if err != nil {
+		log.Print(err)
+	}
+
+	k := datastore.NameKey("CategoryProvider", id, nil)
+	dsClient.Get(ctx, k, &gr)
+	return gr
+}
+
 func AddGroup(groups []Groups) {
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
@@ -25,12 +40,15 @@ func AddGroup(groups []Groups) {
 	}
 	keys := []*datastore.Key{}
 	for _, group := range groups {
-
-		key := datastore.NameKey("Groups", group.Id, nil)
+		key := datastore.NameKey("GroupsProvider", group.Id, nil)
 		keys = append(keys, key)
 	}
 
-	dsClient.PutMulti(ctx, keys, groups)
+	_, erra := dsClient.PutMulti(ctx, keys, groups)
+
+	if erra != nil {
+		log.Print("erra", erra)
+	}
 }
 
 func GetAllGroups() []Groups {
@@ -41,7 +59,7 @@ func GetAllGroups() []Groups {
 	}
 
 	var gr []Groups
-	q := datastore.NewQuery("Groups")
+	q := datastore.NewQuery("GroupsProvider")
 	dsClient.GetAll(ctx, q, &gr)
 
 	return gr
@@ -58,7 +76,7 @@ func AddSubGroups(unmSubGroups []SubGroups) {
 
 	for _, subGroups := range unmSubGroups {
 
-		key := datastore.NameKey("SubCategories", subGroups.Id, nil)
+		key := datastore.NameKey("SubCategoriesProvider", subGroups.Id, nil)
 		keys = append(keys, key)
 	}
 
@@ -75,7 +93,7 @@ func GetAllSubGroups(groups []Groups) []SubGroups {
 	var subGroups []SubGroups
 	//groups
 
-	q := datastore.NewQuery("SubGroups") //.Ancestor()
+	q := datastore.NewQuery("SubGroupsProvider")
 	dsClient.GetAll(ctx, q, &subGroups)
 
 	return subGroups

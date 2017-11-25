@@ -15,7 +15,8 @@ func main() {
 
 	model.GetGroups(mode)
 	subgr, gr := model.GetSubGroups(mode)
-	model.GetProducts(mode, subgr, gr)
+	prods := model.GetProducts(mode, subgr, gr)
+	model.GetAllProducts(prods)
 
 	http.Handle("/", router.GetRouter(mode))
 	appengine.Main()
