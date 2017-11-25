@@ -17,13 +17,13 @@ type Cart struct {
 type ShoppingCart struct {
 	Id       int64   `json:"id"`
 	Name     string  `json:"name"`
-	Price    float32 `json:"price"`
+	Price    float64 `json:"price"`
 	Quantity int     `json:"quantity"`
 }
 
 type ShoppingCartCookie struct {
 	ShoppingCart []ShoppingCart `json:"shoppingCarts"`
-	OverallPrice float32        `json:"overallPrice"`
+	OverallPrice float64        `json:"overallPrice"`
 }
 
 func AddCart(w http.ResponseWriter, req *http.Request) {
@@ -49,7 +49,7 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 	//TODO getting ids from request
 	var sc []ShoppingCart
 	var ids []int64
-	var overAllPrice float32
+	var overAllPrice float64
 
 	cart, err := cart.Get(req)
 	if err != nil {
@@ -64,7 +64,7 @@ func GetCart(w http.ResponseWriter, req *http.Request) {
 
 	for index, value := range cart {
 		scart := ShoppingCart{pr[index].Id, pr[index].Name, pr[index].Price, value.Quantity}
-		overAllPrice = overAllPrice + (pr[index].Price * float32(value.Quantity))
+		overAllPrice = overAllPrice + (pr[index].Price * float64(value.Quantity))
 		sc = append(sc, scart)
 	}
 

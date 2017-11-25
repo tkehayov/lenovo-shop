@@ -9,7 +9,7 @@ import (
 
 type Product struct {
 	Id           int64
-	Price        float32
+	Price        float64
 	Name         string
 	ScreenSize   string
 	ImagePreview string

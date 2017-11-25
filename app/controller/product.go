@@ -10,7 +10,7 @@ import (
 )
 
 type Product struct {
-	Price        float32 `json:"price"`
+	Price        float64 `json:"price"`
 	Name         string  `json:"name"`
 	Category     string  `json:"category"`
 	ScreenSize   string  `json:"screenSize"`

@@ -39,9 +39,9 @@ func (dev DevMode) VendorUrls() map[string]string {
 
 	return map[string]string{
 		"base":      baseUrl,
-		"groups":    baseUrl + "/groups/1",
-		"subgroups": baseUrl + "/subgroups/1",
-		"products":  baseUrl + "/products/1/2/3",
+		"groups":    baseUrl + "/groups/0006301183441",
+		"subgroups": baseUrl + "/subgroups/0006301183441/",
+		"products":  baseUrl + "/products/0006301183441/",
 	}
 }
 
