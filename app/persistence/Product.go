@@ -47,7 +47,6 @@ func Persist(pr Product) {
 }
 
 func PersistMulti(pr []Product) {
-	log.Print("Hello from here")
 	var keys []*datastore.Key
 
 	ctx := context.Background()
@@ -120,7 +119,6 @@ func Get(keyID int64) Product {
 }
 
 func GetAll() []Product {
-	log.Print("products/all")
 	var products []Product
 
 	ctx := context.Background()

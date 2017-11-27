@@ -37,7 +37,5 @@ func GetAllCategories() []Category {
 	q := datastore.NewQuery("Categories")
 	dsClient.GetAll(ctx, q, &cat)
 
-	log.Print(cat)
-
 	return cat
 }

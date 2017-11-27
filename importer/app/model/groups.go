@@ -85,8 +85,6 @@ func GetSubGroups(mode shared.Mode) ([]importer.SubGroups, []importer.Groups) {
 		}
 		fmt.Println("response Body subgroups: ", string(body))
 		xml.Unmarshal(body, &unmSubGroups)
-
-		log.Print("unmSubGroups: ", unmSubGroups)
 	}
 
 	var subGroupsImporter []importer.SubGroups
