@@ -14,7 +14,7 @@ import (
 
 type FilterProduct struct {
 	Id           int64   `json:"id"`
-	Price        float32 `json:"price"`
+	Price        float64 `json:"price"`
 	Name         string  `json:"name"`
 	ScreenSize   string  `json:"screenSize"`
 	ImagePreview string  `json:"imagePreview"`

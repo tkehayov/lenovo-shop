@@ -1,0 +1,10 @@
+# Demo application for App Engine "flexible environment".
+#application: lenovo-shop
+#version: 1
+runtime: go
+env: flex
+api_version: go1
+
+env_variables:
+  DATASTORE_EMULATOR_HOST: 'localhost:8081'
+  DATASTORE_PROJECT_ID: 'lenovo-shop'

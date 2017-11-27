@@ -25,3 +25,10 @@ func AddCategory(w http.ResponseWriter, req *http.Request) {
 
 	persistence.AddCategory(persistence.Category{Name: category.Name})
 }
+
+func GetAllCategories(w http.ResponseWriter, req *http.Request) {
+	cats := persistence.GetAllCategories()
+
+	b := marshal(cats)
+	w.Write(b)
+}

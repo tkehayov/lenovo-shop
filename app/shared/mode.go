@@ -8,6 +8,7 @@ import (
 type Mode interface {
 	StaticPath() string
 	ImagePath() string
+	VendorUrls() map[string]string
 }
 
 type DevMode struct {
@@ -31,6 +32,24 @@ func (dev DevMode) StaticPath() string {
 
 func (dev DevMode) ImagePath() string {
 	return "../product-images/"
+}
+
+func (dev DevMode) VendorUrls() map[string]string {
+	baseUrl := "http://localhost:9000"
+
+	return map[string]string{
+		"base":      baseUrl,
+		"groups":    baseUrl + "/groups/0006301183441",
+		"subgroups": baseUrl + "/subgroups/0006301183441/",
+		"products":  baseUrl + "/products/0006301183441/",
+		"product":   baseUrl + "/product/",
+	}
+}
+
+func (prodMode ProdMode) VendorUrls() map[string]string {
+	return map[string]string{
+		"rsc": "",
+	}
 }
 
 func frontEndFolder() string {

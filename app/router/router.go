@@ -31,6 +31,7 @@ func GetRouter(mode shared.Mode) http.Handler {
 
 	// Products
 	r.HandleFunc("/product", controller.AddProduct).Methods("POST")
+
 	r.HandleFunc("/product/{id}", controller.GetProduct).Methods("GET")
 	//TODO Not using in productions(for test purpose because of missing datastore UI)
 	r.HandleFunc("/products/all", controller.GetAllProduct).Methods("GET")
@@ -38,6 +39,8 @@ func GetRouter(mode shared.Mode) http.Handler {
 	//Categories
 	r.HandleFunc("/categories/{category}", getMode(http.HandlerFunc(controller.FilterProducts))).Methods("GET")
 	r.HandleFunc("/categories", controller.AddCategory).Methods("POST")
+	//For Testing
+	r.HandleFunc("/categoriess/all", controller.GetAllCategories).Methods("GET")
 
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir(mode.StaticPath())))
 

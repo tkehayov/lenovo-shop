@@ -9,12 +9,16 @@ import (
 
 type Product struct {
 	Id           int64
-	Price        float32
+	Price        float64
+	PriceVat     float64
 	Name         string
 	ScreenSize   string
 	ImagePreview string
 	Category     string
 	SubCategory  string
+	Warranty     int16
+	Model        string
+	//Characteristics Characteristics `xml:"characteristics"`
 }
 
 func Persist(pr Product) {
@@ -38,6 +42,31 @@ func Persist(pr Product) {
 	}
 
 	if _, err := dsClient.Put(ctx, productKey, products); err != nil {
+		log.Print(err)
+	}
+}
+
+func PersistMulti(pr []Product) {
+	var keys []*datastore.Key
+
+	ctx := context.Background()
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	for _, p := range pr {
+		log.Print("Category", p.Category)
+		log.Print("SubCategories", p.SubCategory)
+		cat := datastore.NameKey("Categories", p.Category, nil)
+		subCat := datastore.NameKey("SubCategories", p.SubCategory, cat)
+		productKey := datastore.IncompleteKey("Products", subCat)
+
+		keys = append(keys, productKey)
+	}
+
+	if _, err = dsClient.PutMulti(ctx, keys, pr); err != nil {
 		log.Print(err)
 	}
 }
@@ -98,7 +127,7 @@ func GetAll() []Product {
 	if err != nil {
 		log.Print(err)
 	}
-	kCat := datastore.NameKey("Categories", "laptops", nil)
+	kCat := datastore.NameKey("Categories", "HP компютри - Pavilion", nil)
 	//subCat := datastore.NameKey("SubCategories", "x1-carbon", nil)
 	q := datastore.NewQuery("Products").Ancestor(kCat)
 
