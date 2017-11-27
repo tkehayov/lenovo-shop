@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/xml"
 	"fmt"
+	app "github.com/lenovo-shop/app/persistence"
 	"github.com/lenovo-shop/app/shared"
 	importer "github.com/lenovo-shop/importer/app/persistence"
 	"io/ioutil"
@@ -16,18 +17,31 @@ type Product struct {
 }
 
 type Products struct {
-	Description  string  `xml:"description"`
-	Id           string  `xml:"id"`
-	Model        string  `xml:"model"`
-	Name         string  `xml:"name"`
-	Kkprice      float64 `xml:"kkprice"`
-	Price        float64 `xml:"price"`
-	PriceDds     float64 `xml:"price_dds"`
-	SmallPicture string  `xml:"small_picture"`
+	Id string `xml:"id"`
 }
 
 type ProductId struct {
 	Id string
+}
+
+type AllProducts struct {
+	//ProductInfo ProductInfo `xml:"product_info"`
+	Group           string          `xml:"group"`
+	Model           string          `xml:"model"`
+	Characteristics Characteristics `xml:"characteristics"`
+	Warranty        int16           `xml:"months"`
+	Price           float64         `xml:"price"`
+	PriceVat        float64         `xml:"price_dds"`
+	SubGroups       string          `xml:"subgroup"`
+}
+
+type Characteristics struct {
+	Characteristic []Characteristic `xml:"characteristic"`
+}
+
+type Characteristic struct {
+	Name        string `xml:"name"`
+	Description string `xml:"description"`
 }
 
 func GetProducts(mode shared.Mode, subgr []importer.SubGroups, group []importer.Groups) []ProductId {
@@ -60,6 +74,7 @@ func GetProducts(mode shared.Mode, subgr []importer.SubGroups, group []importer.
 
 	importer.PersistMultiProducts(prodsId...)
 	prods := importer.GetAllProducts()
+
 	for _, prod := range prods {
 		productId := ProductId{
 			prod.Id,
@@ -70,7 +85,38 @@ func GetProducts(mode shared.Mode, subgr []importer.SubGroups, group []importer.
 	return productIds
 }
 
-func GetAllProducts(prods []ProductId) {
-	log.Print("prods ", prods)
+func GetAllProducts(prods []ProductId, mode shared.Mode) {
+	var allProducts []AllProducts
+	var products []app.Product
 
+	for _, prod := range prods {
+		resp, err := http.Get(mode.VendorUrls()["product"] + prod.Id)
+
+		if err != nil {
+			log.Print(err)
+		}
+
+		body, errRead := ioutil.ReadAll(resp.Body)
+		if errRead != nil {
+			log.Print(errRead)
+		}
+		log.Print("response Body all products ", string(body))
+
+		xml.Unmarshal(body, &allProducts)
+	}
+
+	for _, product := range allProducts {
+		pr := app.Product{
+			Price:       product.Price,
+			Category:    product.Group,
+			SubCategory: product.SubGroups,
+			PriceVat:    product.PriceVat,
+			Warranty:    product.Warranty,
+			Model:       product.Model,
+		}
+		products = append(products, pr)
+	}
+
+	app.PersistMulti(products)
+	log.Print("allProducts", allProducts)
 }
