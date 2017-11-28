@@ -2,9 +2,8 @@ package persistence
 
 import (
 	"cloud.google.com/go/datastore"
-	"context"
+	"github.com/lenovo-shop/app/shared"
 	"log"
-	"os"
 )
 
 type Order struct {
@@ -19,12 +18,8 @@ type Order struct {
 
 func MakeOrder(order Order, ids ...int64) {
 	var keys []*datastore.Key
+	ctx, dsClient := shared.Connect()
 
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-	if err != nil {
-		log.Print(err)
-	}
 	//	Loop and append keys
 	for _, id := range ids {
 		idKey := datastore.IDKey("Products", id, nil)
@@ -41,12 +36,7 @@ func MakeOrder(order Order, ids ...int64) {
 
 func ListOrders() []Order {
 	var entities []Order
-
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	q := datastore.NewQuery("Orders").Limit(10)
 	dsClient.GetAll(ctx, q, &entities)

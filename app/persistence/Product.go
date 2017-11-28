@@ -2,9 +2,8 @@ package persistence
 
 import (
 	"cloud.google.com/go/datastore"
-	"context"
+	"github.com/lenovo-shop/app/shared"
 	"log"
-	"os"
 )
 
 type Product struct {
@@ -22,11 +21,7 @@ type Product struct {
 }
 
 func Persist(pr Product) {
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	cat := datastore.NameKey("Categories", pr.Category, nil)
 	subCat := datastore.NameKey("SubCategories", pr.SubCategory, cat)
@@ -49,12 +44,7 @@ func Persist(pr Product) {
 func PersistMulti(pr []Product) {
 	var keys []*datastore.Key
 
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-	if err != nil {
-		log.Print(err)
-		return
-	}
+	ctx, dsClient := shared.Connect()
 
 	for _, p := range pr {
 		log.Print("Category", p.Category)
@@ -66,7 +56,7 @@ func PersistMulti(pr []Product) {
 		keys = append(keys, productKey)
 	}
 
-	if _, err = dsClient.PutMulti(ctx, keys, pr); err != nil {
+	if _, err := dsClient.PutMulti(ctx, keys, pr); err != nil {
 		log.Print(err)
 	}
 }
@@ -74,13 +64,7 @@ func PersistMulti(pr []Product) {
 func GetMulti(keysID ...int64) []Product {
 	products := make([]Product, len(keysID))
 	keys := []*datastore.Key{}
-
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	for _, id := range keysID {
 		k := datastore.IDKey("Products", id, nil)
@@ -98,12 +82,7 @@ func GetMulti(keysID ...int64) []Product {
 func Get(keyID int64) Product {
 	var product Product
 
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	kCat := datastore.NameKey("Categories", "laptops", nil)
 	k := datastore.IDKey("Products", keyID, kCat)
@@ -121,12 +100,7 @@ func Get(keyID int64) Product {
 func GetAll() []Product {
 	var products []Product
 
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 	kCat := datastore.NameKey("Categories", "HP компютри - Pavilion", nil)
 	//subCat := datastore.NameKey("SubCategories", "x1-carbon", nil)
 	q := datastore.NewQuery("Products").Ancestor(kCat)

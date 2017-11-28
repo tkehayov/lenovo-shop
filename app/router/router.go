@@ -34,6 +34,7 @@ func GetRouter(mode shared.Mode) http.Handler {
 
 	r.HandleFunc("/product/{id}", controller.GetProduct).Methods("GET")
 	//TODO Not using in productions(for test purpose because of missing datastore UI)
+
 	r.HandleFunc("/products/all", controller.GetAllProduct).Methods("GET")
 
 	//Categories

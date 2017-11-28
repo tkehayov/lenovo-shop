@@ -3,8 +3,8 @@ package persistence
 import (
 	"cloud.google.com/go/datastore"
 	"context"
+	"github.com/lenovo-shop/app/shared"
 	"log"
-	"os"
 )
 
 type Category struct {
@@ -13,10 +13,7 @@ type Category struct {
 
 func AddCategory(category Category) {
 	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	key := datastore.NameKey("Categories", category.Name, nil)
 
@@ -27,11 +24,7 @@ func AddCategory(category Category) {
 }
 
 func GetAllCategories() []Category {
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	var cat []Category
 	q := datastore.NewQuery("Categories")
