@@ -3,8 +3,8 @@ package persistence
 import (
 	"cloud.google.com/go/datastore"
 	"context"
+	"github.com/lenovo-shop/app/shared"
 	"log"
-	"os"
 )
 
 type Product struct {
@@ -25,11 +25,7 @@ func PersistMultiProducts(prodsId ...ProductId) {
 	ctx := context.Background()
 	var pr []*ProductId
 	var keys []*datastore.Key
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	for _, prod := range prodsId {
 		pr = append(pr, &prod)
@@ -44,12 +40,7 @@ func PersistMultiProducts(prodsId ...ProductId) {
 
 func GetAllProducts() []ProductId {
 	var pr []ProductId
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	q := datastore.NewQuery("ProductProvider")
 	dsClient.GetAll(ctx, q, &pr)

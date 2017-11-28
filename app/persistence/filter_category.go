@@ -3,8 +3,8 @@ package persistence
 import (
 	"cloud.google.com/go/datastore"
 	"context"
+	"github.com/lenovo-shop/app/shared"
 	"log"
-	"os"
 )
 
 type Filter struct {
@@ -22,13 +22,7 @@ func FilterProducts(filter Filter) []Product {
 	var productsSeries []Product
 	var seriesKeys []*datastore.Key
 	var productKeys []*datastore.Key
-
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	kCat := datastore.NameKey("Categories", filter.Category, nil)
 

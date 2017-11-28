@@ -3,8 +3,8 @@ package persistence
 import (
 	"cloud.google.com/go/datastore"
 	"context"
+	"github.com/lenovo-shop/app/shared"
 	"log"
-	"os"
 )
 
 type Groups struct {
@@ -19,12 +19,7 @@ type SubGroups struct {
 func GetGroup(id string) Groups {
 	var gr Groups
 	ctx := context.Background()
-
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	k := datastore.NameKey("CategoryProvider", id, nil)
 	dsClient.Get(ctx, k, &gr)
@@ -32,12 +27,8 @@ func GetGroup(id string) Groups {
 }
 
 func AddGroup(groups []Groups) {
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
+	ctx, dsClient := shared.Connect()
 
-	if err != nil {
-		log.Print(err)
-	}
 	keys := []*datastore.Key{}
 	for _, group := range groups {
 		key := datastore.NameKey("GroupsProvider", group.Id, nil)
@@ -52,11 +43,7 @@ func AddGroup(groups []Groups) {
 }
 
 func GetAllGroups() []Groups {
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	var gr []Groups
 	q := datastore.NewQuery("GroupsProvider")
@@ -66,11 +53,7 @@ func GetAllGroups() []Groups {
 }
 
 func AddSubGroups(unmSubGroups []SubGroups) {
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	keys := []*datastore.Key{}
 
@@ -84,11 +67,7 @@ func AddSubGroups(unmSubGroups []SubGroups) {
 }
 
 func GetAllSubGroups(groups []Groups) []SubGroups {
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, os.Getenv("DATASTORE_PROJECT_ID"))
-	if err != nil {
-		log.Print(err)
-	}
+	ctx, dsClient := shared.Connect()
 
 	var subGroups []SubGroups
 	//groups
