@@ -9,6 +9,7 @@ import (
 
 type Category struct {
 	Name string
+	Slug string
 }
 
 func AddCategory(category Category) {
