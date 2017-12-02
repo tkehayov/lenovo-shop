@@ -49,7 +49,8 @@ func GetGroups(mode shared.Mode) {
 	xml.Unmarshal(body, &groups)
 
 	for _, group := range groups.Group {
-		cat := appPers.Category{group.Name}
+		slug := generateSlug(group.Name)
+		cat := appPers.Category{group.Name, slug}
 		appPers.AddCategory(cat)
 	}
 
@@ -76,7 +77,6 @@ func GetSubGroups(mode shared.Mode) ([]importer.SubGroups, []importer.Groups) {
 
 	for _, gr := range groups {
 		resp, err := http.Get(mode.VendorUrls()["subgroups"] + gr.Id)
-		log.Print("grass ", mode.VendorUrls()["subgroups"]+gr.Id)
 		if err != nil {
 			log.Print(err)
 		}
