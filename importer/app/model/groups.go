@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type Group struct {
@@ -99,6 +100,12 @@ func GetSubGroups(mode shared.Mode) ([]importer.SubGroups, []importer.Groups) {
 	importer.AddSubGroups(subGroupsImporter)
 
 	return subGroupsImporter, groups
+}
+
+func generateSlug(name string) string {
+	r := strings.NewReplacer(" ", "-")
+
+	return r.Replace(name)
 }
 
 func GetAllSubGroups(groups []importer.Groups) []SubGroups {
