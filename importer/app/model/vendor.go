@@ -1,14 +1,5 @@
 package model
 
-import (
-	"encoding/xml"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"os"
-)
-
 type Vendor struct {
 	Vendor []Vendors `xml:"vendor"`
 }
