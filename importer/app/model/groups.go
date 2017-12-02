@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type Group struct {
@@ -48,7 +49,8 @@ func GetGroups(mode shared.Mode) {
 	xml.Unmarshal(body, &groups)
 
 	for _, group := range groups.Group {
-		cat := appPers.Category{group.Name}
+		slug := generateSlug(group.Name)
+		cat := appPers.Category{group.Name, slug}
 		appPers.AddCategory(cat)
 	}
 
@@ -75,7 +77,6 @@ func GetSubGroups(mode shared.Mode) ([]importer.SubGroups, []importer.Groups) {
 
 	for _, gr := range groups {
 		resp, err := http.Get(mode.VendorUrls()["subgroups"] + gr.Id)
-		log.Print("grass ", mode.VendorUrls()["subgroups"]+gr.Id)
 		if err != nil {
 			log.Print(err)
 		}
@@ -99,6 +100,12 @@ func GetSubGroups(mode shared.Mode) ([]importer.SubGroups, []importer.Groups) {
 	importer.AddSubGroups(subGroupsImporter)
 
 	return subGroupsImporter, groups
+}
+
+func generateSlug(name string) string {
+	r := strings.NewReplacer(" ", "-")
+
+	return r.Replace(name)
 }
 
 func GetAllSubGroups(groups []importer.Groups) []SubGroups {
