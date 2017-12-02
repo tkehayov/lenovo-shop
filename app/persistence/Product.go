@@ -101,9 +101,7 @@ func GetAll() []Product {
 	var products []Product
 
 	ctx, dsClient := shared.Connect()
-	kCat := datastore.NameKey("Categories", "HP компютри - Pavilion", nil)
-	//subCat := datastore.NameKey("SubCategories", "x1-carbon", nil)
-	q := datastore.NewQuery("Products").Ancestor(kCat)
+	q := datastore.NewQuery("Products")
 
 	keys, erra := dsClient.GetAll(ctx, q, &products)
 

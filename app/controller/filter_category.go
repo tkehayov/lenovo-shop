@@ -49,9 +49,10 @@ func FilterProducts(w http.ResponseWriter, req *http.Request) {
 		log.Print(errlimit)
 	}
 
+	cat := persistence.Category{Name: "laptops", Slug: category}
 	filter := persistence.Filter{
 		ScreenSizes: screenSizes,
-		Category:    category,
+		Category:    cat,
 		PriceFrom:   float32(min),
 		PriceTo:     float32(max),
 		Limit:       limitInt,

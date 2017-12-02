@@ -9,7 +9,7 @@ import (
 
 type Filter struct {
 	ScreenSizes []string
-	Category    string
+	Category    Category
 	PriceFrom   float32
 	PriceTo     float32
 	SubCategory []string
@@ -23,11 +23,12 @@ func FilterProducts(filter Filter) []Product {
 	var seriesKeys []*datastore.Key
 	var productKeys []*datastore.Key
 	ctx, dsClient := shared.Connect()
-
-	kCat := datastore.NameKey("Categories", filter.Category, nil)
+	log.Print(filter.SubCategory)
+	kCat := datastore.NameKey("Categories", filter.Category.Name, nil)
 
 	//Product Series
 	productsSeries, seriesKeys = filterSeries(filter, dsClient, ctx, productsSeries, seriesKeys)
+	log.Print("productsSeries", productsSeries)
 
 	for _, screenSize := range filter.ScreenSizes {
 		q := datastore.NewQuery("Products")
@@ -40,7 +41,8 @@ func FilterProducts(filter Filter) []Product {
 		}
 		q = q.Limit(filter.Limit)
 
-		if filter.Category != "" {
+		if filter.Category.Name != "" {
+			//q = q.Ancestor(kCat).Filter("Slug=", filter.Category.Slug)
 			q = q.Ancestor(kCat)
 		}
 
@@ -85,7 +87,7 @@ func filterSeries(filter Filter, dsClient *datastore.Client, ctx context.Context
 		querySeries = querySeries.Limit(filter.Limit)
 
 		if len(series) != 0 {
-			cat := datastore.NameKey("Categories", filter.Category, nil)
+			cat := datastore.NameKey("Categories", filter.Category.Name, nil)
 			key := datastore.NameKey("SubCategories", series, cat)
 			querySeries = querySeries.Ancestor(key)
 		}
